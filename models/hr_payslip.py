@@ -21,7 +21,6 @@ from .base_browsable import (
 
 _logger = logging.getLogger(__name__)
 
-
 class HrPayslip(models.Model):
     _name = "hr.payslip"
     _inherit = ["mail.thread", "mail.activity.mixin"]
@@ -157,6 +156,7 @@ class HrPayslip(models.Model):
         "Prevent Compute on Confirm", compute="_compute_prevent_compute_on_confirm"
     )
 
+
     def _compute_allow_cancel_payslips(self):
         self.allow_cancel_payslips = (
             self.env["ir.config_parameter"]
@@ -203,14 +203,45 @@ class HrPayslip(models.Model):
     def action_payslip_draft(self):
         return self.write({"state": "draft"})
 
+    # def action_payslip_done(self):
+    #     if (
+    #         not self.env.context.get("without_compute_sheet")
+    #         and not self.prevent_compute_on_confirm
+    #     ):
+    #         self.compute_sheet()
+    #     return self.write({"state": "done"})
     def action_payslip_done(self):
+        """Mark payslip as 'Done' and send an email notification."""
+        _logger.info("🚀 action_payslip_done triggered!")
+
+        # Compute sheet if necessary before marking as done
         if (
             not self.env.context.get("without_compute_sheet")
             and not self.prevent_compute_on_confirm
         ):
+            _logger.info("🛠️ Computing payslip sheet before confirming.")
             self.compute_sheet()
-        return self.write({"state": "done"})
 
+        # Mark payslip as done
+        self.write({"state": "done"})
+        _logger.info("✅ Payslip status set to 'Done'.")
+
+        # Send email notification
+        template = self.env.ref('payroll.mail_template_hr_payslip', raise_if_not_found=False)
+
+        if not template:
+            _logger.error("❌ Payslip email template NOT FOUND!")
+            return
+
+        for payslip in self:
+            if payslip.employee_id.work_email:
+                _logger.info(f"📨 Sending email to: {payslip.employee_id.work_email}")
+                mail_id = template.with_context(force_send=True).send_mail(payslip.id)
+                _logger.info(f"✅ Email sent successfully, Mail ID: {mail_id}")
+            else:
+                _logger.warning(f"⚠️ Employee {payslip.employee_id.name} does not have an email.")
+
+        return True
     def action_payslip_cancel(self):
         for payslip in self:
             if payslip.allow_cancel_payslips:
@@ -789,3 +820,5 @@ class HrPayslip(models.Model):
             return line[0].total
         else:
             return 0.0
+        
+    
