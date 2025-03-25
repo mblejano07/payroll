@@ -155,7 +155,17 @@ class HrPayslip(models.Model):
     prevent_compute_on_confirm = fields.Boolean(
         "Prevent Compute on Confirm", compute="_compute_prevent_compute_on_confirm"
     )
-
+    # added by mblejano
+    # starts here
+    net_pay = fields.Float(
+        string="Net Pay",
+        compute="_compute_net_pay",
+        store=True
+    )
+   
+    def _compute_net_pay(self):
+        for payslip in self:
+            payslip.net_pay = payslip.get_salary_line_total("NET")
 
     def _compute_allow_cancel_payslips(self):
         self.allow_cancel_payslips = (
@@ -163,7 +173,7 @@ class HrPayslip(models.Model):
             .sudo()
             .get_param("payroll.allow_cancel_payslips")
         )
-
+    # ends here
     def _compute_prevent_compute_on_confirm(self):
         self.prevent_compute_on_confirm = (
             self.env["ir.config_parameter"]
@@ -210,6 +220,9 @@ class HrPayslip(models.Model):
     #     ):
     #         self.compute_sheet()
     #     return self.write({"state": "done"})
+
+    # edited by mblejano
+    # starts here
     def action_payslip_done(self):
         """Mark payslip as 'Done' and send an email notification."""
         _logger.info("🚀 action_payslip_done triggered!")
@@ -242,6 +255,7 @@ class HrPayslip(models.Model):
                 _logger.warning(f"⚠️ Employee {payslip.employee_id.name} does not have an email.")
 
         return True
+    # ends here
     def action_payslip_cancel(self):
         for payslip in self:
             if payslip.allow_cancel_payslips:
