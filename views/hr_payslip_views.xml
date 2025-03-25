@@ -10,6 +10,9 @@
                 <field name="name" />
                 <field name="date_from" optional="show" decoration-bf="1" />
                 <field name="date_to" optional="show" decoration-bf="1" />
+                <!-- added by mblejano -->
+                <field name="net_pay"/>
+                <!-- ends here -->
                 <field name="activity_ids" widget="list_activity" optional="show" />
                 <field
                     name="state"
