@@ -16,15 +16,12 @@ class HrContract(models.Model):
     schedule_pay = fields.Selection(
         [
             ("monthly", "Monthly"),
-            ("quarterly", "Quarterly"),
-            ("semi-annually", "Semi-annually"),
-            ("annually", "Annually"),
             ("weekly", "Weekly"),
-            ("bi-weekly", "Bi-weekly"),
-            ("bi-monthly", "Bi-monthly"),
+            ("bi-weekly", "Bi-weekly")
         ],
         string="Scheduled Pay",
         index=True,
+        required=True,
         default="monthly",
         help="Defines the frequency of the wage payment.",
     )
