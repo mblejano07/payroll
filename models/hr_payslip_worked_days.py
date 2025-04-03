@@ -1,7 +1,5 @@
-# Part of Odoo. See LICENSE file for full copyright and licensing details.
-
-from odoo import fields, models
-
+from odoo import fields, models, api
+from datetime import datetime, time
 
 class HrPayslipWorkedDays(models.Model):
     _name = "hr.payslip.worked_days"
@@ -22,5 +20,58 @@ class HrPayslipWorkedDays(models.Model):
         "hr.contract",
         string="Contract",
         required=True,
-        help="The contract for which applied this input",
+        help="The contract for which this input applies",
     )
+
+    @api.model
+    def _get_attendance_data(self, contract, date_from, date_to):
+        """
+        Fetch attendance records within the selected date range if the contract requires attendance tracking.
+        """
+        if contract.resource_calendar_id and "Onsite" in contract.resource_calendar_id.name:
+            # Fetch attendance records for the employee within the date range
+            attendances = self.env['hr.attendance'].search([
+                ('employee_id', '=', contract.employee_id.id),
+                ('check_in', '>=', date_from),
+                ('check_out', '<=', date_to),
+            ])
+
+            attendance_data = []
+            for attendance in attendances:
+                attendance_data.append({
+                    'date': attendance.check_in.date(),  # Extract only the date
+                    'worked_hours': attendance.worked_hours  # Ensure this is computed correctly
+                })
+
+        else:
+            # Default to contract's weekly hours if the contract is not "Onsite"
+            attendance_data = [{'date': date_from, 'worked_hours': contract.resource_calendar_id.hours_per_week or 40}]
+
+        return attendance_data
+
+
+
+    @api.model
+    def create(self, vals):
+        """
+        Override create method to set worked hours based on attendance or schedule.
+        """
+        contract = self.env['hr.contract'].browse(vals.get('contract_id'))
+        payslip = self.env['hr.payslip'].browse(vals.get('payslip_id'))  # Get related payslip
+
+        date_from = payslip.date_from  # Ensure you get the correct start date
+        date_to = payslip.date_to  # Ensure you get the correct end date
+
+        if contract.resource_calendar_id and "Onsite" in contract.resource_calendar_id.name:
+            attendance_data = self._get_attendance_data(contract, vals.get('date_from'), vals.get('date_to'))
+
+            if isinstance(attendance_data, list) and attendance_data:
+                vals['number_of_hours'] = sum(entry['worked_hours'] for entry in attendance_data)  # Sum up total worked hours
+            else:
+                vals['number_of_hours'] = 0  # Default to 0 if no data found
+
+        else:
+            vals['number_of_hours'] = contract.resource_calendar_id.hours_per_week or 40
+        
+        return super(HrPayslipWorkedDays, self).create(vals)
+
