@@ -22,12 +22,8 @@ class HrPayslipWorkedDays(models.Model):
         required=True,
         help="The contract for which this input applies",
     )
-
     @api.model
     def _get_attendance_data(self, contract, date_from, date_to):
-        """
-        Fetch attendance records within the selected date range if the contract requires attendance tracking.
-        """
         if contract.resource_calendar_id and "Onsite" in contract.resource_calendar_id.name:
             # Fetch attendance records for the employee within the date range
             attendances = self.env['hr.attendance'].search([
@@ -38,17 +34,23 @@ class HrPayslipWorkedDays(models.Model):
 
             attendance_data = []
             for attendance in attendances:
-                attendance_data.append({
-                    'date': attendance.check_in.date(),  # Extract only the date
-                    'worked_hours': attendance.worked_hours  # Ensure this is computed correctly
-                })
 
+                # Compute based on overtime status
+                if attendance.overtime_status == 'approved':
+                    total_hours = attendance.expected_hours + attendance.validated_overtime_hours
+                else:   
+                    total_hours = attendance.expected_hours
+
+                attendance_data.append({
+                    'date': attendance.check_in.date(),
+                    'worked_hours': total_hours
+                })
         else:
-            # Default to contract's weekly hours if the contract is not "Onsite"
+            # Default fallback for flexible schedule
             attendance_data = [{'date': date_from, 'worked_hours': contract.resource_calendar_id.hours_per_week or 40}]
 
         return attendance_data
-
+   
     @api.model
     def create(self, vals):
         # Only override if number_of_hours is not set
