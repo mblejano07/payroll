@@ -22,6 +22,7 @@ class HrPayslipWorkedDays(models.Model):
         required=True,
         help="The contract for which this input applies",
     )
+
     @api.model
     def _get_attendance_data(self, contract, date_from, date_to):
         if contract.resource_calendar_id and "Onsite" in contract.resource_calendar_id.name:
@@ -34,12 +35,15 @@ class HrPayslipWorkedDays(models.Model):
 
             attendance_data = []
             for attendance in attendances:
-
                 # Compute based on overtime status
                 if attendance.overtime_status == 'approved':
                     total_hours = attendance.expected_hours + attendance.validated_overtime_hours
                 else:   
                     total_hours = attendance.expected_hours
+
+                # Core working hours (8 hours work + 1 hour break)
+                if total_hours > 8:
+                    total_hours -= 1  # Deduct 1 hour for the break if the total worked hours exceed 8
 
                 attendance_data.append({
                     'date': attendance.check_in.date(),
@@ -71,4 +75,3 @@ class HrPayslipWorkedDays(models.Model):
                 vals['number_of_hours'] = contract.resource_calendar_id.hours_per_week or 40
 
         return super(HrPayslipWorkedDays, self).create(vals)
-
