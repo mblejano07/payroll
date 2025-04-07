@@ -159,21 +159,21 @@ class HrPayslip(models.Model):
     # starts here
     net_pay = fields.Float(
         string="Net Pay",
-        compute="_compute_net_pay",
+        # compute="_compute_net_pay",
         store=True
     )
    
-    def _compute_net_pay(self):
-        for payslip in self:
-            payslip.net_pay = payslip.get_salary_line_total("NET")
-
+    # def _compute_net_pay(self):
+    #     for payslip in self:
+    #         payslip.net_pay = payslip.get_salary_line_total("NET")
+    # ends here
     def _compute_allow_cancel_payslips(self):
         self.allow_cancel_payslips = (
             self.env["ir.config_parameter"]
             .sudo()
             .get_param("payroll.allow_cancel_payslips")
         )
-    # ends here
+
     def _compute_prevent_compute_on_confirm(self):
         self.prevent_compute_on_confirm = (
             self.env["ir.config_parameter"]
@@ -224,7 +224,7 @@ class HrPayslip(models.Model):
     # edited by mblejano
     # starts here
     def action_payslip_done(self):
-        """Mark payslip as 'Done' and send an email notification."""
+        """Mark payslip as 'Done', update net pay, and send an email notification."""
         _logger.info("🚀 action_payslip_done triggered!")
 
         # Compute sheet if necessary before marking as done
@@ -234,6 +234,10 @@ class HrPayslip(models.Model):
         ):
             _logger.info("🛠️ Computing payslip sheet before confirming.")
             self.compute_sheet()
+
+        # Update net pay before finalizing the payslip
+        for payslip in self:
+            payslip.net_pay = payslip.get_salary_line_total("NET")  # Ensure accurate net pay
 
         # Mark payslip as done
         self.write({"state": "done"})
@@ -255,6 +259,7 @@ class HrPayslip(models.Model):
                 _logger.warning(f"⚠️ Employee {payslip.employee_id.name} does not have an email.")
 
         return True
+
     # ends here
     def action_payslip_cancel(self):
         for payslip in self:
