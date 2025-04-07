@@ -49,29 +49,24 @@ class HrPayslipWorkedDays(models.Model):
 
         return attendance_data
 
-
-
     @api.model
     def create(self, vals):
-        """
-        Override create method to set worked hours based on attendance or schedule.
-        """
-        contract = self.env['hr.contract'].browse(vals.get('contract_id'))
-        payslip = self.env['hr.payslip'].browse(vals.get('payslip_id'))  # Get related payslip
+        # Only override if number_of_hours is not set
+        if 'number_of_hours' not in vals or not vals.get('number_of_hours'):
+            contract = self.env['hr.contract'].browse(vals.get('contract_id'))
+            payslip = self.env['hr.payslip'].browse(vals.get('payslip_id'))
 
-        date_from = payslip.date_from  # Ensure you get the correct start date
-        date_to = payslip.date_to  # Ensure you get the correct end date
+            date_from = payslip.date_from
+            date_to = payslip.date_to
 
-        if contract.resource_calendar_id and "Onsite" in contract.resource_calendar_id.name:
-            attendance_data = self._get_attendance_data(contract, vals.get('date_from'), vals.get('date_to'))
-
-            if isinstance(attendance_data, list) and attendance_data:
-                vals['number_of_hours'] = sum(entry['worked_hours'] for entry in attendance_data)  # Sum up total worked hours
+            if contract.resource_calendar_id and "Onsite" in contract.resource_calendar_id.name:
+                attendance_data = self._get_attendance_data(contract, date_from, date_to)
+                if isinstance(attendance_data, list) and attendance_data:
+                    vals['number_of_hours'] = sum(entry['worked_hours'] for entry in attendance_data)
+                else:
+                    vals['number_of_hours'] = 0
             else:
-                vals['number_of_hours'] = 0  # Default to 0 if no data found
+                vals['number_of_hours'] = contract.resource_calendar_id.hours_per_week or 40
 
-        else:
-            vals['number_of_hours'] = contract.resource_calendar_id.hours_per_week or 40
-        
         return super(HrPayslipWorkedDays, self).create(vals)
 
