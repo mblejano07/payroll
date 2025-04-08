@@ -359,14 +359,14 @@ class HrPayslip(models.Model):
             for day in attendance_data:
                 worked_day = {
                     'name': f'Attendance for {day["date"]}',
-                    'code': 'ATTEND',
+                    'code': day['code'],
                     'number_of_days': 1,
                     'number_of_hours': day['worked_hours'],
                     'contract_id': contract.id,
                 }
                 worked_days.append(worked_day)  # ✅ Append each day's record separately
 
-            _logger.info(f"Daily Attendance Data: {worked_days}")
+            # _logger.info(f"Daily Attendance Data: {worked_days}")
 
         return worked_days
 
