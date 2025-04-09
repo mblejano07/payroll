@@ -16,3 +16,4 @@ from . import hr_payslip_worked_days
 from . import hr_payslip_run
 from . import res_config_settings
 from . import resource_calendar
+from . import hr_attendance
