@@ -55,6 +55,7 @@ class HrPayslipWorkedDays(models.Model):
                 worked_hours = attendance.worked_hours or 0.0
                 overtime_hours = attendance.validated_overtime_hours or 0.0
                 date = check_in.date()
+            
 
                 # Add OVERTIME if applicable
                 if overtime_hours > 0.0 and attendance.overtime_status == 'approved':
@@ -67,6 +68,7 @@ class HrPayslipWorkedDays(models.Model):
 
                 # Add UNDERTIME if applicable
                 if overtime_hours < 0.0:
+                   
                     attendance_data.append({
                         'name': f'Undertime for {date}',
                         'code': 'UT',
@@ -74,22 +76,48 @@ class HrPayslipWorkedDays(models.Model):
                         'date': date,
                     })
 
+
+
                 # Compute regular worked hours minus OT/UT
-                regular_hours = worked_hours - overtime_hours
-                if regular_hours > 0.0 and attendance.overtime_status == 'to_approved' :
-                    attendance_data.append({
-                        'name': f'Need to approved OT Request first. Attendance for {date}',
-                        'code': 'ATTEND',
-                        'worked_hours': round(regular_hours, 2),
-                        'date': date,
-                    })
-                elif regular_hours > 0.0 :
+                if attendance.overtime_status == 'approved' and overtime_hours <= 0.0:
+                    regular_hours = worked_hours + overtime_hours
                     attendance_data.append({
                         'name': f'Attendance for {date}',
-                        'code': 'ATTEND',
+                        'code': 'ATTENDANCE',
                         'worked_hours': round(regular_hours, 2),
                         'date': date,
                     })
+                if attendance.overtime_status == 'to_approve':
+                    regular_hours = worked_hours - overtime_hours
+                    attendance_data.append({
+                        'name': f'Need to approved OT Request first. Attendance for {date}',
+                        'code': 'ATTENDANCE_OT_FOR_APPROVAL',
+                        'worked_hours': round(regular_hours, 2),
+                        'date': date,
+                    })
+                if attendance.overtime_status == 'refused' and overtime_hours > 0.0:
+                    regular_hours = worked_hours - overtime_hours
+                    attendance_data.append({
+                        'name': f'Attendance for {date}',
+                        'code': 'ATTENDANCE',
+                        'worked_hours': round(regular_hours, 2),
+                        'date': date,
+                    })
+             
+                # if regular_hours > 0.0 and attendance.overtime_status == 'to_approve' :
+                #     attendance_data.append({
+                #         'name': f'Need to approved OT Request first. Attendance for {date}',
+                #         'code': 'ATTENDANCE_OT_FOR_APPROVAL',
+                #         'worked_hours': round(regular_hours, 2),
+                #         'date': date,
+                #     })
+                # elif regular_hours > 0.0:
+                #     attendance_data.append({
+                #         'name': f'Attendance for {date}',
+                #         'code': 'ATTENDANCE',
+                #         'worked_hours': round(regular_hours, 2),
+                #         'date': date,
+                #     })
 
             return attendance_data
 
