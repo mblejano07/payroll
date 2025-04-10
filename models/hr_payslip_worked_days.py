@@ -116,15 +116,6 @@ class HrPayslipWorkedDays(models.Model):
                         'date': current_date,
                     })
 
-            # Regular approved attendance
-            if attendance.overtime_status in ['approved', 'refused'] or overtime_hours <= 0.0:
-                attendance_data.append({
-                    'name': f'Attendance for {current_date}',
-                    'code': 'ATTENDANCE APPROVED',
-                    'worked_hours': round(min(worked_hours, expected_hours), 2),
-                    'date': current_date,
-                })
-
             current_date += timedelta(days=1)
 
         return attendance_data
