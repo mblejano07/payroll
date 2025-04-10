@@ -1,5 +1,5 @@
 from odoo import fields, models, api
-from datetime import datetime, timedelta,time
+from datetime import datetime, timedelta, time
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -25,6 +25,7 @@ class HrPayslipWorkedDays(models.Model):
         required=True,
         help="The contract for which this input applies",
     )
+
     def _get_attendance_data(self, contract, date_from, date_to):
         if not contract.resource_calendar_id or "Onsite" not in contract.resource_calendar_id.name:
             _logger.info("Flexible contract detected, using default hours.")
@@ -40,6 +41,13 @@ class HrPayslipWorkedDays(models.Model):
             ('employee_id', '=', contract.employee_id.id),
             ('check_in', '>=', date_from),
             ('check_in', '<=', date_to),
+        ])
+
+        # Get holidays and overtime information from the resource calendar
+        holiday_leaves = self.env['resource.calendar.leaves'].search([
+            ('calendar_id', '=', contract.resource_calendar_id.id),
+            ('date_from', '>=', date_from),
+            ('date_to', '<=', date_to),
         ])
 
         attendance_by_date = {fields.Datetime.from_string(a.check_in).date(): a for a in attendances}
@@ -61,6 +69,10 @@ class HrPayslipWorkedDays(models.Model):
             hour_to = max(sched.mapped('hour_to'))
             expected_hours = round(hour_to - hour_from - 1, 2)
 
+            # Check if it's a holiday
+            holiday = next((leave for leave in holiday_leaves if leave.date_from.date() <= current_date <= leave.date_to.date()), None)
+            is_rest_day = current_date.weekday() >= 5  # Saturday or Sunday
+
             attendance = attendance_by_date.get(current_date)
             if not attendance or not attendance.check_in or not attendance.check_out:
                 attendance_data.append({
@@ -80,18 +92,38 @@ class HrPayslipWorkedDays(models.Model):
             check_out_hour = check_out.hour + (check_out.minute / 60.0)
 
             # Add OT if approved
-            if overtime_hours > 0.0 and attendance.overtime_status == 'approved':
-                attendance_data.append({
-                    'name': f'Overtime for {current_date}',
-                    'code': 'OT',
-                    'worked_hours': round(overtime_hours, 2),
-                    'date': current_date,
-                })
+            if overtime_hours > 0.0:
+                # Check the overtime status and apply the appropriate overtime code
+                if holiday:  # It's a holiday
+                    if holiday.holiday_type == 'legal':
+                        code = 'OTLH'  # Overtime on a Legal Holiday
+                    elif holiday.holiday_type == 'special':
+                        code = 'OTSH'  # Overtime on a Special Holiday
+                elif is_rest_day:  # It's a rest day (Sat/Sun)
+                    code = 'OTRD'  # Overtime on a Rest Day
+                else:
+                    code = 'OTO'  # Ordinary Overtime
 
-            # OT not yet approved
+                # Check if the overtime needs approval
+                if attendance.overtime_status == 'to_approve':
+                    attendance_data.append({
+                        'name': f'Need to approve OT Request first. Attendance for {current_date}',
+                        'code': 'ATTENDANCE_OT_FOR_APPROVAL',
+                        'worked_hours': round(worked_hours, 2),
+                        'date': current_date,
+                    })
+                elif attendance.overtime_status == 'approved':
+                    attendance_data.append({
+                        'name': f'Overtime for {current_date}',
+                        'code': code,
+                        'worked_hours': round(overtime_hours, 2),
+                        'date': current_date,
+                    })
+
+            # OT not yet approved (from earlier logic)
             elif overtime_hours > 0.0 and attendance.overtime_status == 'to_approve':
                 attendance_data.append({
-                    'name': f'Need to approved OT Request first. Attendance for {current_date}',
+                    'name': f'Need to approve OT Request first. Attendance for {current_date}',
                     'code': 'ATTENDANCE_OT_FOR_APPROVAL',
                     'worked_hours': round(worked_hours, 2),
                     'date': current_date,
@@ -119,8 +151,6 @@ class HrPayslipWorkedDays(models.Model):
             current_date += timedelta(days=1)
 
         return attendance_data
-
-
 
 
     def _calculate_worked_hours(self, contract, payslip):
@@ -154,13 +184,11 @@ class HrPayslipWorkedDays(models.Model):
                         'number_of_days': 1,
                         'number_of_hours': entry['worked_hours'],
                     })
-                    # _logger.info(f"Creating worked day line with vals: {vals_copy}")
                     created_records.append(super().create(vals_copy))
                 return created_records[0] if created_records else super().create(vals)
             else:
                 vals['number_of_hours'] = self._calculate_worked_hours(contract, payslip)
 
-        # _logger.info(f"Creating worked day line with vals: {vals}")
         return super().create(vals)
 
     @api.model
@@ -185,14 +213,11 @@ class HrPayslipWorkedDays(models.Model):
                             'number_of_days': 1,
                             'number_of_hours': entry['worked_hours'],
                         })
-                        # _logger.info(f"Creating worked day line with vals: {vals_copy}")
                         created_records.append(super().create(vals_copy))
                 else:
                     vals['number_of_hours'] = self._calculate_worked_hours(contract, payslip)
-                    # _logger.info(f"Creating flexible worked day line with vals: {vals}")
                     created_records.append(super().create(vals))
             else:
-                # _logger.info(f"Creating worked day line with pre-defined vals: {vals}")
                 created_records.append(super().create(vals))
 
         return created_records
