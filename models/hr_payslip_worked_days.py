@@ -26,110 +26,109 @@ class HrPayslipWorkedDays(models.Model):
         help="The contract for which this input applies",
     )
     def _get_attendance_data(self, contract, date_from, date_to):
-        if contract.resource_calendar_id and "Onsite" in contract.resource_calendar_id.name:
-            attendances = self.env['hr.attendance'].search([
-                ('employee_id', '=', contract.employee_id.id),
-                ('check_in', '<=', date_to),
-                ('check_out', '>=', date_from),
-            ])
-
-            attendance_data = []
-
-            core_start = contract.resource_calendar_id.core_hours_start
-            core_end = contract.resource_calendar_id.core_hours_end
-
-            if not core_start or not core_end:
-                _logger.warning("Core hours not configured in calendar.")
-                return []
-
-            # Parse core hours into time objects
-            core_start_time = datetime.strptime(core_start, "%H:%M").time()
-            core_end_time = datetime.strptime(core_end, "%H:%M").time()
-
-            for attendance in attendances:
-                if not attendance.check_in or not attendance.check_out:
-                    continue  # skip if check-in/out are missing
-
-                check_in = fields.Datetime.from_string(attendance.check_in)
-                check_out = fields.Datetime.from_string(attendance.check_out)
-                worked_hours = attendance.worked_hours or 0.0
-                overtime_hours = attendance.validated_overtime_hours or 0.0
-                date = check_in.date()
-            
-
-                # Add OVERTIME if applicable
-                if overtime_hours > 0.0 and attendance.overtime_status == 'approved':
-                    attendance_data.append({
-                        'name': f'Overtime for {date}',
-                        'code': 'OTO',
-                        'worked_hours': round(overtime_hours, 2),
-                        'date': date,
-                    })
-
-                # Add UNDERTIME if applicable
-                if overtime_hours < 0.0:
-                   
-                    attendance_data.append({
-                        'name': f'Undertime for {date}',
-                        'code': 'UT',
-                        'worked_hours': round(overtime_hours, 2),  # already negative
-                        'date': date,
-                    })
-
-
-
-                # Compute regular worked hours minus OT/UT
-                if attendance.overtime_status == 'approved' and overtime_hours <= 0.0:
-                    regular_hours = worked_hours + overtime_hours
-                    attendance_data.append({
-                        'name': f'Attendance for {date}',
-                        'code': 'ATTENDANCE',
-                        'worked_hours': round(regular_hours, 2),
-                        'date': date,
-                    })
-                if attendance.overtime_status == 'to_approve':
-                    regular_hours = worked_hours - overtime_hours
-                    attendance_data.append({
-                        'name': f'Need to approved OT Request first. Attendance for {date}',
-                        'code': 'ATTENDANCE_OT_FOR_APPROVAL',
-                        'worked_hours': round(regular_hours, 2),
-                        'date': date,
-                    })
-                if attendance.overtime_status == 'refused' and overtime_hours > 0.0:
-                    regular_hours = worked_hours - overtime_hours
-                    attendance_data.append({
-                        'name': f'Attendance for {date}',
-                        'code': 'ATTENDANCE',
-                        'worked_hours': round(regular_hours, 2),
-                        'date': date,
-                    })
-             
-                # if regular_hours > 0.0 and attendance.overtime_status == 'to_approve' :
-                #     attendance_data.append({
-                #         'name': f'Need to approved OT Request first. Attendance for {date}',
-                #         'code': 'ATTENDANCE_OT_FOR_APPROVAL',
-                #         'worked_hours': round(regular_hours, 2),
-                #         'date': date,
-                #     })
-                # elif regular_hours > 0.0:
-                #     attendance_data.append({
-                #         'name': f'Attendance for {date}',
-                #         'code': 'ATTENDANCE',
-                #         'worked_hours': round(regular_hours, 2),
-                #         'date': date,
-                #     })
-
-            return attendance_data
-
-        else:
+        if not contract.resource_calendar_id or "Onsite" not in contract.resource_calendar_id.name:
             _logger.info("Flexible contract detected, using default hours.")
-            # Return default entry for flexible schedule
             return [{
-                'name': f'Flexible Schedule',
+                'name': 'Flexible Schedule',
                 'code': 'ATTEND',
                 'worked_hours': contract.resource_calendar_id.hours_per_week or 40,
                 'date': date_from,
             }]
+
+        # Get all attendances within the date range
+        attendances = self.env['hr.attendance'].search([
+            ('employee_id', '=', contract.employee_id.id),
+            ('check_in', '>=', date_from),
+            ('check_in', '<=', date_to),
+        ])
+
+        attendance_by_date = {fields.Datetime.from_string(a.check_in).date(): a for a in attendances}
+        attendance_data = []
+
+        # Iterate through each date in range
+        current_date = date_from
+        while current_date <= date_to:
+            weekday = str(current_date.weekday())
+            sched = contract.resource_calendar_id.attendance_ids.filtered(
+                lambda a: a.dayofweek == weekday and not a.display_type
+            )
+
+            if not sched:
+                current_date += timedelta(days=1)
+                continue  # skip non-working days
+
+            hour_from = min(sched.mapped('hour_from'))
+            hour_to = max(sched.mapped('hour_to'))
+            expected_hours = round(hour_to - hour_from - 1, 2)
+
+            attendance = attendance_by_date.get(current_date)
+            if not attendance or not attendance.check_in or not attendance.check_out:
+                attendance_data.append({
+                    'name': f'ABSENT for {current_date}',
+                    'code': 'ABSENT',
+                    'worked_hours': -expected_hours,
+                    'date': current_date,
+                })
+                current_date += timedelta(days=1)
+                continue
+
+            check_in = fields.Datetime.from_string(attendance.check_in)
+            check_out = fields.Datetime.from_string(attendance.check_out)
+            worked_hours = attendance.worked_hours or 0.0
+            overtime_hours = attendance.validated_overtime_hours or 0.0
+            check_in_hour = check_in.hour + (check_in.minute / 60.0)
+            check_out_hour = check_out.hour + (check_out.minute / 60.0)
+
+            # Add OT if approved
+            if overtime_hours > 0.0 and attendance.overtime_status == 'approved':
+                attendance_data.append({
+                    'name': f'Overtime for {current_date}',
+                    'code': 'OT',
+                    'worked_hours': round(overtime_hours, 2),
+                    'date': current_date,
+                })
+
+            # OT not yet approved
+            elif overtime_hours > 0.0 and attendance.overtime_status == 'to_approve':
+                attendance_data.append({
+                    'name': f'Need to approved OT Request first. Attendance for {current_date}',
+                    'code': 'ATTENDANCE_OT_FOR_APPROVAL',
+                    'worked_hours': round(worked_hours, 2),
+                    'date': current_date,
+                })
+                current_date += timedelta(days=1)
+                continue
+
+            # Late or absent (did not complete core hours)
+            if worked_hours < expected_hours:
+                if worked_hours == 0.0:
+                    attendance_data.append({
+                        'name': f'ABSENT for {current_date}',
+                        'code': 'ABSENT',
+                        'worked_hours': -expected_hours,
+                        'date': current_date,
+                    })
+                else:
+                    attendance_data.append({
+                        'name': f'Late for {current_date}',
+                        'code': 'LATE',
+                        'worked_hours': round(-1 * (expected_hours - worked_hours), 2),
+                        'date': current_date,
+                    })
+
+            # Regular approved attendance
+            if attendance.overtime_status in ['approved', 'refused'] or overtime_hours <= 0.0:
+                attendance_data.append({
+                    'name': f'Attendance for {current_date}',
+                    'code': 'ATTENDANCE APPROVED',
+                    'worked_hours': round(min(worked_hours, expected_hours), 2),
+                    'date': current_date,
+                })
+
+            current_date += timedelta(days=1)
+
+        return attendance_data
+
 
 
 
