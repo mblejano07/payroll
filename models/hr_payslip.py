@@ -358,7 +358,7 @@ class HrPayslip(models.Model):
 
             for day in attendance_data:
                 worked_day = {
-                    'name': f'Attendance for {day["date"]}',
+                    'name': day['name'],
                     'code': day['code'],
                     'number_of_days': 1,
                     'number_of_hours': day['worked_hours'],
