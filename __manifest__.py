@@ -38,7 +38,7 @@
         "views/res_config_settings_views.xml",
         "wizard/hr_payroll_send_email.xml",
         "wizard/hr_payslip_change_state_view.xml",
-        # "views/resource_calendar_form.xml",
+        "views/hr_payslip_form.xml",
     ],
     "demo": ["demo/hr_payroll_demo.xml"],
     "application": True,
