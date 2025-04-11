@@ -402,51 +402,6 @@ class HrPayslip(models.Model):
         return res
 
 
-
-
-    # @api.model
-    # def get_worked_day_lines(self, contracts, date_from, date_to):
-    #     """
-    #     @param contracts: Browse record of contracts
-    #     @return: returns a list of dict containing the input that should be
-    #     applied for the given contract between date_from and date_to
-    #     """
-    #     res = []
-        
-    #     # Loop through the contracts and handle worked days
-    #     for contract in contracts.filtered(lambda contract: contract.resource_calendar_id):
-    #         day_from = datetime.combine(date_from, time.min)
-    #         day_to = datetime.combine(date_to, time.max)
-    #         day_contract_start = datetime.combine(contract.date_start, time.min)
-            
-    #         # Support for the hr_public_holidays module
-    #         contract = contract.with_context(employee_id=self.employee_id.id, exclude_public_holidays=True)
-            
-    #         # Adjust the start date if it's earlier than the contract start date
-    #         if day_from < day_contract_start:
-    #             day_from = day_contract_start
-
-    #         # == Compute leave days == #
-    #         leaves = self._compute_leave_days(contract, day_from, day_to)
-    #         res.extend(leaves)
-            
-    #         # == Compute regular worked days == #
-    #         attendances = self._compute_worked_days(contract, day_from, day_to)
-    #         res.append(attendances)
-        
-    #     # Call the original method to get standard worked days based on the contract and dates
-    #     worked_days = super(HrPayslip, self).get_worked_day_lines(contracts, date_from, date_to)
-        
-    #     # Add custom attendance-based worked days lines to the result
-    #     for contract in contracts:
-    #         employee = contract.employee_id
-    #         # Fetch attendance lines from the HrPayslipWorkedDays model
-    #         attendance_lines = self.get_attendance_lines(employee, date_from, date_to)
-    #         worked_days += attendance_lines
-        
-    #     # Return all worked days, including both regular and attendance-based
-    #     return worked_days
-        
     def _compute_leave_days(self, contract, day_from, day_to):
         """
         Leave days computation

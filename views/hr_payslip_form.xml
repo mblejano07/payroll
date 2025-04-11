@@ -1,0 +1,17 @@
+<odoo>
+    <data>
+
+        <record id="view_hr_payslip_form_inherit_float_time" model="ir.ui.view">
+            <field name="name">hr.payslip.form.inherit.float.time</field>
+            <field name="model">hr.payslip</field>
+            <field name="inherit_id" ref="payroll.hr_payslip_view_form"/>
+            <field name="arch" type="xml">
+                <!-- Target the number_of_hours field inside the worked_days_line_ids list -->
+                <xpath expr="//field[@name='worked_days_line_ids']/list/field[@name='number_of_hours']" position="attributes">
+                    <attribute name="widget">float_time</attribute>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>
