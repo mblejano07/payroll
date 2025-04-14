@@ -225,14 +225,14 @@ class HrPayslip(models.Model):
     # starts here
     def action_payslip_done(self):
         """Mark payslip as 'Done', update net pay, and send an email notification."""
-        _logger.info("🚀 action_payslip_done triggered!")
+        # _logger.info("🚀 action_payslip_done triggered!")
 
         # Compute sheet if necessary before marking as done
         if (
             not self.env.context.get("without_compute_sheet")
             and not self.prevent_compute_on_confirm
         ):
-            _logger.info("🛠️ Computing payslip sheet before confirming.")
+            # _logger.info("🛠️ Computing payslip sheet before confirming.")
             self.compute_sheet()
 
         # Update net pay before finalizing the payslip
@@ -241,20 +241,20 @@ class HrPayslip(models.Model):
 
         # Mark payslip as done
         self.write({"state": "done"})
-        _logger.info("✅ Payslip status set to 'Done'.")
+        # _logger.info("✅ Payslip status set to 'Done'.")
 
         # Send email notification
         template = self.env.ref('payroll.mail_template_hr_payslip', raise_if_not_found=False)
 
         if not template:
-            _logger.error("❌ Payslip email template NOT FOUND!")
+            # _logger.error("❌ Payslip email template NOT FOUND!")
             return
 
         for payslip in self:
             if payslip.employee_id.work_email:
-                _logger.info(f"📨 Sending email to: {payslip.employee_id.work_email}")
+                # _logger.info(f"📨 Sending email to: {payslip.employee_id.work_email}")
                 mail_id = template.with_context(force_send=True).send_mail(payslip.id)
-                _logger.info(f"✅ Email sent successfully, Mail ID: {mail_id}")
+                # _logger.info(f"✅ Email sent successfully, Mail ID: {mail_id}")
             else:
                 _logger.warning(f"⚠️ Employee {payslip.employee_id.name} does not have an email.")
 
@@ -342,35 +342,65 @@ class HrPayslip(models.Model):
                 }
             )
         return True
+    # edited by mblejano
+    # starts here
+
+    @api.model
+    def get_attendance_lines(self, employee, date_from, date_to):
+        worked_days = []
+        contracts = employee.contract_id.filtered(
+            lambda c: c.date_start <= date_from and (not c.date_end or c.date_end >= date_to)
+        )
+
+        for contract in contracts:
+            attendance_data = self.env['hr.payslip.worked_days']._get_attendance_data(contract, date_from, date_to)
+
+
+            for day in attendance_data:
+                worked_day = {
+                    'name': day['name'],
+                    'code': day['code'],
+                    'number_of_days': 1,
+                    'number_of_hours': day['worked_hours'],
+                    'contract_id': contract.id,
+                }
+                worked_days.append(worked_day)  # ✅ Append each day's record separately
+
+            # _logger.info(f"Daily Attendance Data: {worked_days}")
+
+        return worked_days
 
     @api.model
     def get_worked_day_lines(self, contracts, date_from, date_to):
-        """
-        @param contracts: Browse record of contracts
-        @return: returns a list of dict containing the input that should be
-        applied for the given contract between date_from and date_to
-        """
         res = []
-        for contract in contracts.filtered(
-            lambda contract: contract.resource_calendar_id
-        ):
+
+        for contract in contracts.filtered(lambda c: c.resource_calendar_id):
             day_from = datetime.combine(date_from, time.min)
             day_to = datetime.combine(date_to, time.max)
             day_contract_start = datetime.combine(contract.date_start, time.min)
-            # Support for the hr_public_holidays module.
-            contract = contract.with_context(
-                employee_id=self.employee_id.id, exclude_public_holidays=True
-            )
-            # only use payslip day_from if it's greather than contract start date
+
+            contract = contract.with_context(employee_id=self.employee_id.id, exclude_public_holidays=True)
             if day_from < day_contract_start:
                 day_from = day_contract_start
-            # == compute leave days == #
+
+            # Compute leave days
             leaves = self._compute_leave_days(contract, day_from, day_to)
             res.extend(leaves)
-            # == compute worked days == #
-            attendances = self._compute_worked_days(contract, day_from, day_to)
-            res.append(attendances)
+            # Determine whether to use computed worked days or attendance data
+            if "Onsite" in contract.resource_calendar_id.name:
+                # Fetch worked days from attendance records for Onsite employees
+                attendance_lines = self.get_attendance_lines(contract.employee_id, date_from, date_to)
+                res.extend(attendance_lines)
+            else:
+                # Compute worked days for Flexible Schedule (Remote/Hybrid Work)
+                worked_days = self._compute_worked_days(contract, day_from, day_to)
+                res.append(worked_days)  # ✅ Only append computed days for Flexible Work
+
+            if not isinstance(res, list):
+                res = [res]  # Convert single dictionary to a list
+
         return res
+
 
     def _compute_leave_days(self, contract, day_from, day_to):
         """
@@ -437,7 +467,7 @@ class HrPayslip(models.Model):
             "number_of_hours": work_data[contract.employee_id.id]["hours"],
             "contract_id": contract.id,
         }
-
+    
     @api.model
     def get_inputs(self, contracts, date_from, date_to):
         # TODO: We leave date_from and date_to params here for backwards
@@ -781,6 +811,8 @@ class HrPayslip(models.Model):
             )
             for line in worked_days_line_ids:
                 worked_days_lines += worked_days_lines.new(line)
+                # worked_days_lines += worked_days_lines.new([dict(line) for line in worked_days_lines])
+            # Remove existing worked days lines
             payslip.worked_days_line_ids = worked_days_lines
 
     @api.onchange("employee_id", "date_from", "date_to")

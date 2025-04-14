@@ -28,6 +28,12 @@ class HrContract(models.Model):
     resource_calendar_id = fields.Many2one(
         required=True, help="Employee's working schedule."
     )
+    x_non_taxable = fields.Monetary(
+        string="Non-Taxable Allowance"
+    )
+    x_basic_salary = fields.Monetary(
+        string="Basic Salary"
+    )
 
     def get_all_structures(self):
         """
