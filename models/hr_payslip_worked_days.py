@@ -156,14 +156,21 @@ class HrPayslipWorkedDays(models.Model):
                         'worked_hours': -expected_hours,
                         'date': current_date,
                     })
-                elif check_in_hour > hour_from :
+                elif check_in_hour >= hour_from and check_out_hour <= hour_to:
+                    attendance_data.append({
+                        'name': f'Late and Undertime for {current_date}',
+                        'code': 'LATE',
+                        'worked_hours': round(-1 * (expected_hours - worked_hours), 2),
+                        'date': current_date,
+                    })
+                elif check_in_hour >= hour_from :
                     attendance_data.append({
                         'name': f'Late for {current_date}',
                         'code': 'LATE',
                         'worked_hours': round(-1 * (expected_hours - worked_hours), 2),
                         'date': current_date,
                     })
-                elif check_out_hour < hour_to :
+                elif check_out_hour <= hour_to :
                     attendance_data.append({
                         'name': f'Undertime for {current_date}',
                         'code': 'UT',
