@@ -1,6 +1,9 @@
 from odoo import fields, models, api
 from datetime import datetime, timedelta, time
 import logging
+import pytz
+
+PH_TZ = pytz.timezone("Asia/Manila")
 
 _logger = logging.getLogger(__name__)
 
@@ -27,6 +30,10 @@ class HrPayslipWorkedDays(models.Model):
     )
 
     def _get_attendance_data(self, contract, date_from, date_to):
+
+
+        _logger.info(f"START OF THE ATTENDANCE_DATA -- FROM {date_from} TO {date_to}")
+
         if not contract.resource_calendar_id or "Onsite" not in contract.resource_calendar_id.name:
             _logger.info("Flexible contract detected, using default hours.")
             return [{
@@ -40,7 +47,7 @@ class HrPayslipWorkedDays(models.Model):
         attendances = self.env['hr.attendance'].search([
             ('employee_id', '=', contract.employee_id.id),
             ('check_in', '>=', date_from),
-            ('check_in', '<=', date_to),
+            ('check_out', '<=', date_to),
         ])
 
         # Get holidays and overtime information from the resource calendar
@@ -50,7 +57,7 @@ class HrPayslipWorkedDays(models.Model):
             ('date_to', '<=', date_to),
         ])
 
-        attendance_by_date = {fields.Datetime.from_string(a.check_in).date(): a for a in attendances}
+        attendance_by_date = {fields.Datetime.from_string(a.check_in).astimezone(PH_TZ).date(): a for a in attendances}
         attendance_data = []
 
         # Iterate through each date in range
@@ -74,10 +81,19 @@ class HrPayslipWorkedDays(models.Model):
             is_rest_day = current_date.weekday() >= 5  # Saturday or Sunday
 
             attendance = attendance_by_date.get(current_date)
-            if not attendance or not attendance.check_in or not attendance.check_out:
+            if not attendance:
+                reason = 'NO_RECORD'
+            elif not attendance.check_in:
+                reason = 'NO_CHECK_IN'
+            elif not attendance.check_out:
+                reason = 'NO_CHECK_OUT'
+            else:
+                reason = None
+
+            if reason:
                 attendance_data.append({
-                    'name': f'ABSENT for {current_date}',
-                    'code': 'ABSENT',
+                    'name': f'{reason} for {current_date}',
+                    'code': reason,
                     'worked_hours': -expected_hours,
                     'date': current_date,
                 })
@@ -107,9 +123,9 @@ class HrPayslipWorkedDays(models.Model):
                 # Check if the overtime needs approval
                 if attendance.overtime_status == 'to_approve':
                     attendance_data.append({
-                        'name': f'Need to approve OT Request first. Attendance for {current_date}',
+                        'name': f'Attendance for {current_date}. Need to approve OT Request first.',
                         'code': 'ATTENDANCE_OT_FOR_APPROVAL',
-                        'worked_hours': round(worked_hours, 2),
+                        'worked_hours': round(worked_hours - overtime_hours, 2),
                         'date': current_date,
                     })
                 elif attendance.overtime_status == 'approved':
@@ -140,10 +156,24 @@ class HrPayslipWorkedDays(models.Model):
                         'worked_hours': -expected_hours,
                         'date': current_date,
                     })
-                else:
+                elif check_in_hour >= hour_from and check_out_hour <= hour_to:
+                    attendance_data.append({
+                        'name': f'Late and Undertime for {current_date}',
+                        'code': 'LATE',
+                        'worked_hours': round(-1 * (expected_hours - worked_hours), 2),
+                        'date': current_date,
+                    })
+                elif check_in_hour >= hour_from :
                     attendance_data.append({
                         'name': f'Late for {current_date}',
                         'code': 'LATE',
+                        'worked_hours': round(-1 * (expected_hours - worked_hours), 2),
+                        'date': current_date,
+                    })
+                elif check_out_hour <= hour_to :
+                    attendance_data.append({
+                        'name': f'Undertime for {current_date}',
+                        'code': 'UT',
                         'worked_hours': round(-1 * (expected_hours - worked_hours), 2),
                         'date': current_date,
                     })
