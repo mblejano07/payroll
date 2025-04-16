@@ -1,0 +1,765 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <data noupdate="1">
+        <record id="sss_contribution_1" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">1</field>
+            <field name="range_max">5249.99</field>
+            <field name="monthly_salary_credit">5000</field>
+            <field name="employer_regular_ss">500</field>
+            <field name="employer_mpf">0</field>
+            <field name="employer_ec">10</field>
+            <field name="employer_total">510</field>
+            <field name="employee_regular_ss">250</field>
+            <field name="employee_mpf">0</field>
+            <field name="employee_total">250</field>
+            <field name="total_contribution">760</field>
+        </record>
+        <record id="sss_contribution_2" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">5250</field>
+            <field name="range_max">5749.99</field>
+            <field name="monthly_salary_credit">5500</field>
+            <field name="employer_regular_ss">550</field>
+            <field name="employer_mpf">0</field>
+            <field name="employer_ec">10</field>
+            <field name="employer_total">560</field>
+            <field name="employee_regular_ss">275</field>
+            <field name="employee_mpf">0</field>
+            <field name="employee_total">275</field>
+            <field name="total_contribution">835</field>
+        </record>
+        <record id="sss_contribution_3" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">5750</field>
+            <field name="range_max">6249.99</field>
+            <field name="monthly_salary_credit">6000</field>
+            <field name="employer_regular_ss">600</field>
+            <field name="employer_mpf">0</field>
+            <field name="employer_ec">10</field>
+            <field name="employer_total">610</field>
+            <field name="employee_regular_ss">300</field>
+            <field name="employee_mpf">0</field>
+            <field name="employee_total">300</field>
+            <field name="total_contribution">910</field>
+        </record>
+        <record id="sss_contribution_4" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">6250</field>
+            <field name="range_max">6749.99</field>
+            <field name="monthly_salary_credit">6500</field>
+            <field name="employer_regular_ss">650</field>
+            <field name="employer_mpf">0</field>
+            <field name="employer_ec">10</field>
+            <field name="employer_total">660</field>
+            <field name="employee_regular_ss">325</field>
+            <field name="employee_mpf">0</field>
+            <field name="employee_total">325</field>
+            <field name="total_contribution">985</field>
+        </record>
+        <record id="sss_contribution_5" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">6750</field>
+            <field name="range_max">7249.99</field>
+            <field name="monthly_salary_credit">7000</field>
+            <field name="employer_regular_ss">700</field>
+            <field name="employer_mpf">0</field>
+            <field name="employer_ec">10</field>
+            <field name="employer_total">710</field>
+            <field name="employee_regular_ss">350</field>
+            <field name="employee_mpf">0</field>
+            <field name="employee_total">350</field>
+            <field name="total_contribution">1060</field>
+        </record>
+        <record id="sss_contribution_13" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">10750</field>
+            <field name="range_max">11249.99</field>
+            <field name="monthly_salary_credit">11000</field>
+            <field name="employer_regular_ss">1100</field>
+            <field name="employer_mpf">0</field>
+            <field name="employer_ec">10</field>
+            <field name="employer_total">1110</field>
+            <field name="employee_regular_ss">550</field>
+            <field name="employee_mpf">0</field>
+            <field name="employee_total">550</field>
+            <field name="total_contribution">1660</field>
+        </record>
+
+        <record id="sss_contribution_14" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">11250</field>
+            <field name="range_max">11749.99</field>
+            <field name="monthly_salary_credit">11500</field>
+            <field name="employer_regular_ss">1150</field>
+            <field name="employer_mpf">0</field>
+            <field name="employer_ec">10</field>
+            <field name="employer_total">1160</field>
+            <field name="employee_regular_ss">575</field>
+            <field name="employee_mpf">0</field>
+            <field name="employee_total">575</field>
+            <field name="total_contribution">1735</field>
+        </record>
+        <record id="sss_contribution_15" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">11750</field>
+            <field name="range_max">12249.99</field>
+            <field name="monthly_salary_credit">12000</field>
+            <field name="employer_regular_ss">1200</field>
+            <field name="employer_mpf">0</field>
+            <field name="employer_ec">10</field>
+            <field name="employer_total">1210</field>
+            <field name="employee_regular_ss">600</field>
+            <field name="employee_mpf">0</field>
+            <field name="employee_total">600</field>
+            <field name="total_contribution">1810</field>
+        </record>
+
+        <record id="sss_contribution_16" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">12250</field>
+            <field name="range_max">12749.99</field>
+            <field name="monthly_salary_credit">12500</field>
+            <field name="employer_regular_ss">1250</field>
+            <field name="employer_mpf">0</field>
+            <field name="employer_ec">10</field>
+            <field name="employer_total">1260</field>
+            <field name="employee_regular_ss">625</field>
+            <field name="employee_mpf">0</field>
+            <field name="employee_total">625</field>
+            <field name="total_contribution">1885</field>
+        </record>
+
+        <record id="sss_contribution_17" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">12750</field>
+            <field name="range_max">13249.99</field>
+            <field name="monthly_salary_credit">13000</field>
+            <field name="employer_regular_ss">1300</field>
+            <field name="employer_mpf">0</field>
+            <field name="employer_ec">10</field>
+            <field name="employer_total">1310</field>
+            <field name="employee_regular_ss">650</field>
+            <field name="employee_mpf">0</field>
+            <field name="employee_total">650</field>
+            <field name="total_contribution">1960</field>
+        </record>
+
+        <record id="sss_contribution_18" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">13250</field>
+            <field name="range_max">13749.99</field>
+            <field name="monthly_salary_credit">13500</field>
+            <field name="employer_regular_ss">1350</field>
+            <field name="employer_mpf">0</field>
+            <field name="employer_ec">10</field>
+            <field name="employer_total">1360</field>
+            <field name="employee_regular_ss">675</field>
+            <field name="employee_mpf">0</field>
+            <field name="employee_total">675</field>
+            <field name="total_contribution">2035</field>
+        </record>
+
+        <record id="sss_contribution_19" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">13750</field>
+            <field name="range_max">14249.99</field>
+            <field name="monthly_salary_credit">14000</field>
+            <field name="employer_regular_ss">1400</field>
+            <field name="employer_mpf">0</field>
+            <field name="employer_ec">10</field>
+            <field name="employer_total">1410</field>
+            <field name="employee_regular_ss">700</field>
+            <field name="employee_mpf">0</field>
+            <field name="employee_total">700</field>
+            <field name="total_contribution">2100</field>
+        </record>
+
+        <record id="sss_contribution_20" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">14250</field>
+            <field name="range_max">14749.99</field>
+            <field name="monthly_salary_credit">14500</field>
+            <field name="employer_regular_ss">1450</field>
+            <field name="employer_mpf">0</field>
+            <field name="employer_ec">10</field>
+            <field name="employer_total">1460</field>
+            <field name="employee_regular_ss">725</field>
+            <field name="employee_mpf">0</field>
+            <field name="employee_total">725</field>
+            <field name="total_contribution">2185</field>
+        </record>
+
+        <record id="sss_contribution_21" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">14750</field>
+            <field name="range_max">15249.99</field>
+            <field name="monthly_salary_credit">15000</field>
+            <field name="employer_regular_ss">1500</field>
+            <field name="employer_mpf">0</field>
+            <field name="employer_ec">10</field>
+            <field name="employer_total">1510</field>
+            <field name="employee_regular_ss">750</field>
+            <field name="employee_mpf">0</field>
+            <field name="employee_total">750</field>
+            <field name="total_contribution">2260</field>
+        </record>
+
+        <record id="sss_contribution_22" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">15250</field>
+            <field name="range_max">15749.99</field>
+            <field name="monthly_salary_credit">15500</field>
+            <field name="employer_regular_ss">1550</field>
+            <field name="employer_mpf">0</field>
+            <field name="employer_ec">10</field>
+            <field name="employer_total">1560</field>
+            <field name="employee_regular_ss">775</field>
+            <field name="employee_mpf">0</field>
+            <field name="employee_total">775</field>
+            <field name="total_contribution">2335</field>
+        </record>
+
+        <record id="sss_contribution_23" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">15750</field>
+            <field name="range_max">16249.99</field>
+            <field name="monthly_salary_credit">16000</field>
+            <field name="employer_regular_ss">1600</field>
+            <field name="employer_mpf">0</field>
+            <field name="employer_ec">30</field>
+            <field name="employer_total">1630</field>
+            <field name="employee_regular_ss">800</field>
+            <field name="employee_mpf">0</field>
+            <field name="employee_total">800</field>
+            <field name="total_contribution">2430</field>
+        </record>
+
+        <record id="sss_contribution_24" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">16250</field>
+            <field name="range_max">16749.99</field>
+            <field name="monthly_salary_credit">16500</field>
+            <field name="employer_regular_ss">1650</field>
+            <field name="employer_mpf">0</field>
+            <field name="employer_ec">30</field>
+            <field name="employer_total">1680</field>
+            <field name="employee_regular_ss">825</field>
+            <field name="employee_mpf">0</field>
+            <field name="employee_total">825</field>
+            <field name="total_contribution">2505</field>
+        </record>
+
+        <record id="sss_contribution_25" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">16750</field>
+            <field name="range_max">17249.99</field>
+            <field name="monthly_salary_credit">17000</field>
+            <field name="employer_regular_ss">1700</field>
+            <field name="employer_mpf">0</field>
+            <field name="employer_ec">30</field>
+            <field name="employer_total">1730</field>
+            <field name="employee_regular_ss">850</field>
+            <field name="employee_mpf">0</field>
+            <field name="employee_total">850</field>
+            <field name="total_contribution">2580</field>
+        </record>
+
+        <record id="sss_contribution_26" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">17250</field>
+            <field name="range_max">17749.99</field>
+            <field name="monthly_salary_credit">17500</field>
+            <field name="employer_regular_ss">1750</field>
+            <field name="employer_mpf">0</field>
+            <field name="employer_ec">30</field>
+            <field name="employer_total">1780</field>
+            <field name="employee_regular_ss">875</field>
+            <field name="employee_mpf">0</field>
+            <field name="employee_total">875</field>
+            <field name="total_contribution">2655</field>
+        </record>
+
+        <record id="sss_contribution_27" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">17750</field>
+            <field name="range_max">18249.99</field>
+            <field name="monthly_salary_credit">18000</field>
+            <field name="employer_regular_ss">1800</field>
+            <field name="employer_mpf">0</field>
+            <field name="employer_ec">30</field>
+            <field name="employer_total">1830</field>
+            <field name="employee_regular_ss">900</field>
+            <field name="employee_mpf">0</field>
+            <field name="employee_total">900</field>
+            <field name="total_contribution">2730</field>
+        </record>
+
+        <record id="sss_contribution_28" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">18250</field>
+            <field name="range_max">18749.99</field>
+            <field name="monthly_salary_credit">18500</field>
+            <field name="employer_regular_ss">1850</field>
+            <field name="employer_mpf">0</field>
+            <field name="employer_ec">30</field>
+            <field name="employer_total">1880</field>
+            <field name="employee_regular_ss">925</field>
+            <field name="employee_mpf">0</field>
+            <field name="employee_total">925</field>
+            <field name="total_contribution">2805</field>
+        </record>
+
+        <record id="sss_contribution_29" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">18750</field>
+            <field name="range_max">19249.99</field>
+            <field name="monthly_salary_credit">19000</field>
+            <field name="employer_regular_ss">1900</field>
+            <field name="employer_mpf">0</field>
+            <field name="employer_ec">30</field>
+            <field name="employer_total">1930</field>
+            <field name="employee_regular_ss">950</field>
+            <field name="employee_mpf">0</field>
+            <field name="employee_total">950</field>
+            <field name="total_contribution">2880</field>
+        </record>
+
+        <record id="sss_contribution_30" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">19250</field>
+            <field name="range_max">19749.99</field>
+            <field name="monthly_salary_credit">19500</field>
+            <field name="employer_regular_ss">1950</field>
+            <field name="employer_mpf">0</field>
+            <field name="employer_ec">30</field>
+            <field name="employer_total">1980</field>
+            <field name="employee_regular_ss">975</field>
+            <field name="employee_mpf">0</field>
+            <field name="employee_total">975</field>
+            <field name="total_contribution">2955</field>
+        </record>
+
+        <record id="sss_contribution_31" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">19750</field>
+            <field name="range_max">20249.99</field>
+            <field name="monthly_salary_credit">20000</field>
+            <field name="employer_regular_ss">2000</field>
+            <field name="employer_mpf">0</field>
+            <field name="employer_ec">30</field>
+            <field name="employer_total">2030</field>
+            <field name="employee_regular_ss">1000</field>
+            <field name="employee_mpf">0</field>
+            <field name="employee_total">1000</field>
+            <field name="total_contribution">3030</field>
+        </record>
+
+        <record id="sss_contribution_32" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">20250</field>
+            <field name="range_max">20749.99</field>
+            <field name="monthly_salary_credit">20000</field>
+            <field name="employer_regular_ss">2000</field>
+            <field name="employer_mpf">50</field>
+            <field name="employer_ec">30</field>
+            <field name="employer_total">2080</field>
+            <field name="employee_regular_ss">1000</field>
+            <field name="employee_mpf">25</field>
+            <field name="employee_total">1025</field>
+            <field name="total_contribution">3105</field>
+        </record>
+        <record id="sss_contribution_33" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">21250</field>
+            <field name="range_max">21749.99</field>
+            <field name="monthly_salary_credit">20000</field>
+            <field name="employer_regular_ss">2000</field>
+            <field name="employer_mpf">150</field>
+            <field name="employer_ec">30</field>
+            <field name="employer_total">2180</field>
+            <field name="employee_regular_ss">1000</field>
+            <field name="employee_mpf">75</field>
+            <field name="employee_total">1075</field>
+            <field name="total_contribution">3255</field>
+        </record>
+        <record id="sss_contribution_34" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">21750</field>
+            <field name="range_max">22249.99</field>
+            <field name="monthly_salary_credit">20000</field>
+            <field name="employer_regular_ss">2000</field>
+            <field name="employer_mpf">200</field>
+            <field name="employer_ec">30</field>
+            <field name="employer_total">2230</field>
+            <field name="employee_regular_ss">1000</field>
+            <field name="employee_mpf">100</field>
+            <field name="employee_total">1100</field>
+            <field name="total_contribution">3330</field>
+        </record>
+        <record id="sss_contribution_35" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">22250</field>
+            <field name="range_max">22749.99</field>
+            <field name="monthly_salary_credit">20000</field>
+            <field name="employer_regular_ss">2000</field>
+            <field name="employer_mpf">250</field>
+            <field name="employer_ec">30</field>
+            <field name="employer_total">2280</field>
+            <field name="employee_regular_ss">1000</field>
+            <field name="employee_mpf">125</field>
+            <field name="employee_total">1125</field>
+            <field name="total_contribution">3405</field>
+        </record>
+        <record id="sss_contribution_36" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">22750</field>
+            <field name="range_max">23249.99</field>
+            <field name="monthly_salary_credit">20000</field>
+            <field name="employer_regular_ss">2000</field>
+            <field name="employer_mpf">300</field>
+            <field name="employer_ec">30</field>
+            <field name="employer_total">2330</field>
+            <field name="employee_regular_ss">1000</field>
+            <field name="employee_mpf">150</field>
+            <field name="employee_total">1150</field>
+            <field name="total_contribution">3480</field>
+        </record>
+        <record id="sss_contribution_37" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">23250</field>
+            <field name="range_max">23749.99</field>
+            <field name="monthly_salary_credit">20000</field>
+            <field name="employer_regular_ss">2000</field>
+            <field name="employer_mpf">350</field>
+            <field name="employer_ec">30</field>
+            <field name="employer_total">2380</field>
+            <field name="employee_regular_ss">1000</field>
+            <field name="employee_mpf">175</field>
+            <field name="employee_total">1175</field>
+            <field name="total_contribution">3555</field>
+        </record>
+        <record id="sss_contribution_38" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">23750</field>
+            <field name="range_max">24249.99</field>
+            <field name="monthly_salary_credit">20000</field>
+            <field name="employer_regular_ss">2000</field>
+            <field name="employer_mpf">400</field>
+            <field name="employer_ec">30</field>
+            <field name="employer_total">2430</field>
+            <field name="employee_regular_ss">1000</field>
+            <field name="employee_mpf">200</field>
+            <field name="employee_total">1200</field>
+            <field name="total_contribution">3630</field>
+        </record>
+        <record id="sss_contribution_39" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">24250</field>
+            <field name="range_max">24749.99</field>
+            <field name="monthly_salary_credit">20000</field>
+            <field name="employer_regular_ss">2000</field>
+            <field name="employer_mpf">450</field>
+            <field name="employer_ec">30</field>
+            <field name="employer_total">2480</field>
+            <field name="employee_regular_ss">1000</field>
+            <field name="employee_mpf">225</field>
+            <field name="employee_total">1225</field>
+            <field name="total_contribution">3705</field>
+        </record>
+        <record id="sss_contribution_40" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">24750</field>
+            <field name="range_max">25249.99</field>
+            <field name="monthly_salary_credit">20000</field>
+            <field name="employer_regular_ss">2000</field>
+            <field name="employer_mpf">500</field>
+            <field name="employer_ec">30</field>
+            <field name="employer_total">2530</field>
+            <field name="employee_regular_ss">1000</field>
+            <field name="employee_mpf">250</field>
+            <field name="employee_total">1250</field>
+            <field name="total_contribution">3780</field>
+        </record>
+        <record id="sss_contribution_41" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">25250</field>
+            <field name="range_max">25749.99</field>
+            <field name="monthly_salary_credit">20000</field>
+            <field name="employer_regular_ss">2000</field>
+            <field name="employer_mpf">550</field>
+            <field name="employer_ec">30</field>
+            <field name="employer_total">2580</field>
+            <field name="employee_regular_ss">1000</field>
+            <field name="employee_mpf">275</field>
+            <field name="employee_total">1275</field>
+            <field name="total_contribution">3855</field>
+        </record>
+        <record id="sss_contribution_42" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">25750</field>
+            <field name="range_max">26249.99</field>
+            <field name="monthly_salary_credit">20000</field>
+            <field name="employer_regular_ss">2000</field>
+            <field name="employer_mpf">600</field>
+            <field name="employer_ec">30</field>
+            <field name="employer_total">2630</field>
+            <field name="employee_regular_ss">1000</field>
+            <field name="employee_mpf">300</field>
+            <field name="employee_total">1300</field>
+            <field name="total_contribution">3930</field>
+        </record>
+        <record id="sss_contribution_43" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">26250</field>
+            <field name="range_max">26749.99</field>
+            <field name="monthly_salary_credit">20000</field>
+            <field name="employer_regular_ss">2000</field>
+            <field name="employer_mpf">650</field>
+            <field name="employer_ec">30</field>
+            <field name="employer_total">2680</field>
+            <field name="employee_regular_ss">1000</field>
+            <field name="employee_mpf">325</field>
+            <field name="employee_total">1325</field>
+            <field name="total_contribution">4005</field>
+        </record>
+        <record id="sss_contribution_44" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">26750</field>
+            <field name="range_max">27249.99</field>
+            <field name="monthly_salary_credit">20000</field>
+            <field name="employer_regular_ss">2000</field>
+            <field name="employer_mpf">700</field>
+            <field name="employer_ec">30</field>
+            <field name="employer_total">2730</field>
+            <field name="employee_regular_ss">1000</field>
+            <field name="employee_mpf">350</field>
+            <field name="employee_total">1350</field>
+            <field name="total_contribution">4080</field>
+        </record>
+        <record id="sss_contribution_45" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">27250</field>
+            <field name="range_max">27749.99</field>
+            <field name="monthly_salary_credit">20000</field>
+            <field name="employer_regular_ss">2000</field>
+            <field name="employer_mpf">750</field>
+            <field name="employer_ec">30</field>
+            <field name="employer_total">2780</field>
+            <field name="employee_regular_ss">1000</field>
+            <field name="employee_mpf">375</field>
+            <field name="employee_total">1375</field>
+            <field name="total_contribution">4155</field>
+        </record>
+        <record id="sss_contribution_46" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">27750</field>
+            <field name="range_max">28249.99</field>
+            <field name="monthly_salary_credit">20000</field>
+            <field name="employer_regular_ss">2000</field>
+            <field name="employer_mpf">800</field>
+            <field name="employer_ec">30</field>
+            <field name="employer_total">2830</field>
+            <field name="employee_regular_ss">1000</field>
+            <field name="employee_mpf">400</field>
+            <field name="employee_total">1400</field>
+            <field name="total_contribution">4230</field>
+        </record>
+        <record id="sss_contribution_47" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">28250</field>
+            <field name="range_max">28749.99</field>
+            <field name="monthly_salary_credit">20000</field>
+            <field name="employer_regular_ss">2000</field>
+            <field name="employer_mpf">850</field>
+            <field name="employer_ec">30</field>
+            <field name="employer_total">2880</field>
+            <field name="employee_regular_ss">1000</field>
+            <field name="employee_mpf">425</field>
+            <field name="employee_total">1425</field>
+            <field name="total_contribution">4305</field>
+        </record>
+        <record id="sss_contribution_48" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">28750</field>
+            <field name="range_max">29249.99</field>
+            <field name="monthly_salary_credit">20000</field>
+            <field name="employer_regular_ss">2000</field>
+            <field name="employer_mpf">900</field>
+            <field name="employer_ec">30</field>
+            <field name="employer_total">2930</field>
+            <field name="employee_regular_ss">1000</field>
+            <field name="employee_mpf">450</field>
+            <field name="employee_total">1450</field>
+            <field name="total_contribution">4380</field>
+        </record>
+        <record id="sss_contribution_49" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">29250</field>
+            <field name="range_max">29749.99</field>
+            <field name="monthly_salary_credit">20000</field>
+            <field name="employer_regular_ss">2000</field>
+            <field name="employer_mpf">950</field>
+            <field name="employer_ec">30</field>
+            <field name="employer_total">2980</field>
+            <field name="employee_regular_ss">1000</field>
+            <field name="employee_mpf">475</field>
+            <field name="employee_total">1475</field>
+            <field name="total_contribution">4455</field>
+        </record>
+        <record id="sss_contribution_50" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">29750</field>
+            <field name="range_max">30249.99</field>
+            <field name="monthly_salary_credit">20000</field>
+            <field name="employer_regular_ss">2000</field>
+            <field name="employer_mpf">1000</field>
+            <field name="employer_ec">30</field>
+            <field name="employer_total">3030</field>
+            <field name="employee_regular_ss">1000</field>
+            <field name="employee_mpf">500</field>
+            <field name="employee_total">1500</field>
+            <field name="total_contribution">4530</field>
+        </record>
+        <record id="sss_contribution_51" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">30250</field>
+            <field name="range_max">30749.99</field>
+            <field name="monthly_salary_credit">20000</field>
+            <field name="employer_regular_ss">2000</field>
+            <field name="employer_mpf">1050</field>
+            <field name="employer_ec">30</field>
+            <field name="employer_total">3080</field>
+            <field name="employee_regular_ss">1000</field>
+            <field name="employee_mpf">525</field>
+            <field name="employee_total">1525</field>
+            <field name="total_contribution">4605</field>
+        </record>
+        <record id="sss_contribution_52" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">30750</field>
+            <field name="range_max">31249.99</field>
+            <field name="monthly_salary_credit">20000</field>
+            <field name="employer_regular_ss">2000</field>
+            <field name="employer_mpf">1100</field>
+            <field name="employer_ec">30</field>
+            <field name="employer_total">3130</field>
+            <field name="employee_regular_ss">1000</field>
+            <field name="employee_mpf">550</field>
+            <field name="employee_total">1550</field>
+            <field name="total_contribution">4680</field>
+        </record>
+        <record id="sss_contribution_53" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">31250</field>
+            <field name="range_max">31749.99</field>
+            <field name="monthly_salary_credit">20000</field>
+            <field name="employer_regular_ss">2000</field>
+            <field name="employer_mpf">1150</field>
+            <field name="employer_ec">30</field>
+            <field name="employer_total">3180</field>
+            <field name="employee_regular_ss">1000</field>
+            <field name="employee_mpf">575</field>
+            <field name="employee_total">1575</field>
+            <field name="total_contribution">4755</field>
+        </record>
+        <record id="sss_contribution_54" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">31750</field>
+            <field name="range_max">32249.99</field>
+            <field name="monthly_salary_credit">20000</field>
+            <field name="employer_regular_ss">2000</field>
+            <field name="employer_mpf">1200</field>
+            <field name="employer_ec">30</field>
+            <field name="employer_total">3230</field>
+            <field name="employee_regular_ss">1000</field>
+            <field name="employee_mpf">600</field>
+            <field name="employee_total">1600</field>
+            <field name="total_contribution">4830</field>
+        </record>
+        <record id="sss_contribution_55" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">32250</field>
+            <field name="range_max">32749.99</field>
+            <field name="monthly_salary_credit">20000</field>
+            <field name="employer_regular_ss">2000</field>
+            <field name="employer_mpf">1250</field>
+            <field name="employer_ec">30</field>
+            <field name="employer_total">3280</field>
+            <field name="employee_regular_ss">1000</field>
+            <field name="employee_mpf">625</field>
+            <field name="employee_total">1625</field>
+            <field name="total_contribution">4905</field>
+        </record>
+        <record id="sss_contribution_56" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">32750</field>
+            <field name="range_max">33249.99</field>
+            <field name="monthly_salary_credit">20000</field>
+            <field name="employer_regular_ss">2000</field>
+            <field name="employer_mpf">1300</field>
+            <field name="employer_ec">30</field>
+            <field name="employer_total">3330</field>
+            <field name="employee_regular_ss">1000</field>
+            <field name="employee_mpf">650</field>
+            <field name="employee_total">1650</field>
+            <field name="total_contribution">4980</field>
+        </record>
+        <record id="sss_contribution_57" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">33250</field>
+            <field name="range_max">33749.99</field>
+            <field name="monthly_salary_credit">20000</field>
+            <field name="employer_regular_ss">2000</field>
+            <field name="employer_mpf">1350</field>
+            <field name="employer_ec">30</field>
+            <field name="employer_total">3380</field>
+            <field name="employee_regular_ss">1000</field>
+            <field name="employee_mpf">675</field>
+            <field name="employee_total">1675</field>
+            <field name="total_contribution">5055</field>
+        </record>
+        <record id="sss_contribution_58" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">33750</field>
+            <field name="range_max">34249.99</field>
+            <field name="monthly_salary_credit">20000</field>
+            <field name="employer_regular_ss">2000</field>
+            <field name="employer_mpf">1400</field>
+            <field name="employer_ec">30</field>
+            <field name="employer_total">3430</field>
+            <field name="employee_regular_ss">1000</field>
+            <field name="employee_mpf">700</field>
+            <field name="employee_total">1700</field>
+            <field name="total_contribution">5130</field>
+        </record>
+        <record id="sss_contribution_59" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">34250</field>
+            <field name="range_max">34749.99</field>
+            <field name="monthly_salary_credit">20000</field>
+            <field name="employer_regular_ss">2000</field>
+            <field name="employer_mpf">1450</field>
+            <field name="employer_ec">30</field>
+            <field name="employer_total">3480</field>
+            <field name="employee_regular_ss">1000</field>
+            <field name="employee_mpf">725</field>
+            <field name="employee_total">1725</field>
+            <field name="total_contribution">5205</field>
+        </record>
+        <record id="sss_contribution_60" model="sss.contribution">
+            <field name="year">2025</field>
+            <field name="range_min">34750</field>
+            <field name="range_max">100000000</field>
+            <field name="monthly_salary_credit">20000</field>
+            <field name="employer_regular_ss">2000</field>
+            <field name="employer_mpf">1500</field>
+            <field name="employer_ec">30</field>
+            <field name="employer_total">3530</field>
+            <field name="employee_regular_ss">1000</field>
+            <field name="employee_mpf">750</field>
+            <field name="employee_total">1750</field>
+            <field name="total_contribution">5280</field>
+        </record>
+    </data>
+</odoo>

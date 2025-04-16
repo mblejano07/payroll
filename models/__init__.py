@@ -16,3 +16,6 @@ from . import hr_payslip_worked_days
 from . import hr_payslip_run
 from . import res_config_settings
 from . import hr_attendance
+from . import sss_contribution
+from . import pagibig_contribution
+from . import philhealth_contribution

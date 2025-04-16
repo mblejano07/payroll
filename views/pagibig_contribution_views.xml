@@ -1,0 +1,55 @@
+<odoo>
+    <!-- Tree View for Pag-IBIG Contribution -->
+    <record id="view_pagibig_contribution_tree" model="ir.ui.view">
+        <field name="name">pagibig.contribution.tree</field>
+        <field name="model">pagibig.contribution</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="year"/>
+                <field name="min_salary"/>
+                <field name="max_salary"/>
+                <field name="employee_share_percent"/>
+                <field name="employer_share_percent"/>
+                <field name="employee_share"/>
+                <field name="employer_share"/>
+                <field name="total_contribution"/>
+            </list  >
+        </field>
+    </record>
+
+    <!-- Form View for Pag-IBIG Contribution -->
+    <record id="view_pagibig_contribution_form" model="ir.ui.view">
+        <field name="name">pagibig.contribution.form</field>
+        <field name="model">pagibig.contribution</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="year"/>
+                        <field name="min_salary"/>
+                        <field name="max_salary"/>
+                        <field name="employee_share_percent"/>
+                        <field name="employer_share_percent"/>
+                        <field name="employee_share"/>
+                        <field name="employer_share"/>
+                    </group>
+                    <group>
+                        <field name="total_contribution" readonly="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action to Open Pag-IBIG Contribution Records -->
+    <record id="action_pagibig_contribution" model="ir.actions.act_window">
+        <field name="name">Pag-IBIG Contributions</field>
+        <field name="res_model">pagibig.contribution</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Menu Items for Pag-IBIG Contribution -->
+    <menuitem id="menu_hr_root" name="Human Resources"/>
+    <menuitem id="menu_pagibig_contribution" name="Pag-IBIG Contribution" parent="menu_hr_root"/>
+    <menuitem id="menu_pagibig_contribution_entries" name="Contribution Table" parent="menu_pagibig_contribution" action="action_pagibig_contribution"/>
+</odoo>
