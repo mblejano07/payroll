@@ -1,0 +1,33 @@
+<odoo>
+    <data noupdate="1">
+
+        <!-- Fixed premium -->
+        <record id="philhealth_contribution_10000" model="philhealth.contribution">
+            <field name="year">2025</field>
+            <field name="min_salary">0.00</field>
+            <field name="max_salary">10000.00</field>
+            <field name="premium_rate">5.0</field>
+            <field name="monthly_premium">500.00</field>
+        </record>
+
+        <!-- Variable premium -->
+        <record id="philhealth_contribution_above_10000" model="philhealth.contribution">
+            <field name="year">2025</field>
+            <field name="min_salary">10000.01</field>
+            <field name="max_salary">99999.99</field>
+            <field name="premium_rate">5.0</field>
+            <field name="monthly_premium">500.00</field>
+            <field name="max_premium">5000.00</field>
+        </record>
+
+        <!-- Max capped premium -->
+        <record id="philhealth_contribution_100k" model="philhealth.contribution">
+            <field name="year">2025</field>
+            <field name="min_salary">100000.00</field>
+            <field name="max_salary">100000000.00</field>
+            <field name="premium_rate">5.0</field>
+            <field name="monthly_premium">5000.00</field>
+        </record>
+
+    </data>
+</odoo>

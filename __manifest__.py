@@ -39,6 +39,12 @@
         "wizard/hr_payroll_send_email.xml",
         "wizard/hr_payslip_change_state_view.xml",
         "views/hr_payslip_form.xml",
+        "views/sss_contribution_views.xml",
+        "data/sss_table.xml",
+        "views/pagibig_contribution_views.xml",
+        "data/pagibig_table.xml",
+        "views/philhealth_contribution_views.xml",
+        "data/philhealth_table.xml"
     ],
     "demo": ["demo/hr_payroll_demo.xml"],
     "application": True,
