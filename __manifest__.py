@@ -44,7 +44,8 @@
         "views/pagibig_contribution_views.xml",
         "data/pagibig_table.xml",
         "views/philhealth_contribution_views.xml",
-        "data/philhealth_table.xml"
+        "data/philhealth_table.xml",
+        "views/hr_employee_forms.xml",
     ],
     "demo": ["demo/hr_payroll_demo.xml"],
     "application": True,
