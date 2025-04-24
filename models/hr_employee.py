@@ -1,5 +1,3 @@
-# Part of Odoo. See LICENSE file for full copyright and licensing details.
-
 from odoo import fields, models
 
 
@@ -14,6 +12,14 @@ class HrEmployee(models.Model):
         compute="_compute_payslip_count",
         groups="payroll.group_payroll_user",
     )
+
+    # Government IDs
+    tin = fields.Char(string="TIN")
+    hdmf = fields.Char(string="HDMF Number")
+    philhealth = fields.Char(string="PhilHealth Number")
+
+    # Bank Info
+    bank_name = fields.Char(string="Bank Name")
 
     def _compute_payslip_count(self):
         for employee in self:
