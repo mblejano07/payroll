@@ -213,14 +213,6 @@ class HrPayslip(models.Model):
     def action_payslip_draft(self):
         return self.write({"state": "draft"})
 
-    # def action_payslip_done(self):
-    #     if (
-    #         not self.env.context.get("without_compute_sheet")
-    #         and not self.prevent_compute_on_confirm
-    #     ):
-    #         self.compute_sheet()
-    #     return self.write({"state": "done"})
-
     # edited by mblejano
     # starts here
     def action_payslip_done(self):
@@ -316,6 +308,7 @@ class HrPayslip(models.Model):
             "context": {},
         }
         return res
+    
 
     def unlink(self):
         if any(self.filtered(lambda payslip: payslip.state not in ("draft", "cancel"))):
@@ -323,26 +316,140 @@ class HrPayslip(models.Model):
                 _("You cannot delete a payslip which is not draft or cancelled")
             )
         return super().unlink()
+    
+    # mblejano
+    def _get_employee_loan_lines(self):
+        """
+        Fetch the loan lines for the employee that are active within the payslip period.
+        """
+        loan_lines = self.env['hr.employee.loan.line'].search([
+            ('loan_id.employee_id', '=', self.employee_id.id),
+            ('loan_id.state', '=', 'released'),
+            ('date', '>=', self.date_from),
+            ('date', '<=', self.date_to),
+        ])
+        return loan_lines
+
+    def _create_loan_deductions(self):
+        loan_lines = self._get_employee_loan_lines()
+        loan_deductions = []
+
+        # Institution ID to code mapping
+        institution_code_map = {
+            1: 'LOAN_PAGIBIG',
+            2: 'LOAN_PHILHEALTH',
+            3: 'LOAN_SSS',
+            4: 'LOAN_SALARY',
+        }
+
+        for loan_line in loan_lines:
+            institution_id = loan_line.loan_id.institution_id.id
+            input_code = institution_code_map.get(institution_id, 'LOAN')  # Fallback to 'LOAN' if not mapped
+
+            # Check if input already exists to avoid duplicates
+            existing_input = self.env['hr.payslip.input'].search([
+                ('payslip_id', '=', self.id),
+                ('code', '=', input_code)
+            ], limit=1)
+
+            if not existing_input:
+                loan_deductions.append({
+                    'name': loan_line.loan_id.name,
+                    'payslip_id': self.id,
+                    'sequence': 10,
+                    'code': input_code,
+                    'amount': loan_line.amount,
+                    'contract_id': self.contract_id.id,
+                })
+            else:
+                # Update the amount if it already exists
+                existing_input.write({
+                    'amount': loan_line.amount,
+                })
+
+        if loan_deductions:
+            self.env['hr.payslip.input'].create(loan_deductions)
+
+
+
+
 
     def compute_sheet(self):
         for payslip in self:
-            # delete old payslip lines
+            # Step 1: Delete old payslip lines
             payslip.line_ids.unlink()
-            # write payslip lines
-            number = payslip.number or self.env["ir.sequence"].next_by_code(
-                "salary.slip"
-            )
+
+            # Step 2: Write payslip lines (standard salary lines and other custom rules)
+            number = payslip.number or self.env["ir.sequence"].next_by_code("salary.slip")
+            
+            # Fetch the existing lines based on the payslip logic
             lines = [(0, 0, line) for line in list(payslip.get_lines_dict().values())]
+
+            # Step 3: Create loan deductions (if any)
+            loan_deductions = self._create_loan_deductions()
+
+            # Step 4: Add loan deductions to the lines
+            if loan_deductions:
+                for loan_deduction in loan_deductions:
+                    lines.append((0, 0, loan_deduction))
+
+            # Step 5: Write all lines, including salary and loan deductions, into the payslip
             payslip.write(
                 {
                     "line_ids": lines,
                     "number": number,
-                    "state": "verify",
+                    "state": "verify",  # Assuming the payslip is verified after computation
                     "compute_date": fields.Date.today(),
                 }
             )
-        return True
+
+    # def compute_sheet(self):
+    #     for payslip in self:
+    #         # delete old payslip lines
+    #         payslip.line_ids.unlink()
+    #         # write payslip lines
+    #         number = payslip.number or self.env["ir.sequence"].next_by_code(
+    #             "salary.slip"
+    #         )
+    #         lines = [(0, 0, line) for line in list(payslip.get_lines_dict().values())]
+    #         payslip.write(
+    #             {
+    #                 "line_ids": lines,
+    #                 "number": number,
+    #                 "state": "verify",
+    #                 "compute_date": fields.Date.today(),
+    #             }
+    #         )
+    #     return True
     # edited by mblejano
+
+    # def compute_sheet(self):
+    #     for payslip in self:
+    #         # delete old payslip lines
+    #         payslip.line_ids.unlink()
+
+    #         # write payslip lines (default salary lines, etc.)
+    #         number = payslip.number or self.env["ir.sequence"].next_by_code("salary.slip")
+    #         lines = [(0, 0, line) for line in list(payslip.get_lines_dict().values())]
+
+    #         # Add loan deductions to payslip lines
+    #         loan_deduction_lines = payslip.get_loan_deduction_lines()  # Fetch loan deductions
+
+    #         # Add loan deduction lines to the existing lines
+    #         lines.extend(loan_deduction_lines)
+
+    #         # Write the payslip with the new lines (including loan deductions)
+    #         payslip.write(
+    #             {
+    #                 "line_ids": lines,
+    #                 "number": number,
+    #                 "state": "verify",
+    #                 "compute_date": fields.Date.today(),
+    #             }
+    #         )
+
+    #     return True
+
     # starts here
 
     @api.model
@@ -539,21 +646,6 @@ class HrPayslip(models.Model):
         :return: a dictionary of discreet values and/or Browsable Objects
         """
         self.ensure_one()
-
-        # res = super().get_current_contract_dict(contract, contracts)
-        # res.update({
-        #     # In salary rules refer to these as:
-        #     #     current_contract.foo
-        #     #     current_contract.foo.bar.baz
-        #     "foo": 0,
-        #     "bar": BaseBrowsableObject(
-        #         {
-        #             "baz": 0
-        #         }
-        #     )
-        # })
-        # <do something to update values in res>
-        # return res
 
         return {}
 
