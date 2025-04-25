@@ -250,6 +250,25 @@ class HrPayslip(models.Model):
             else:
                 _logger.warning(f"⚠️ Employee {payslip.employee_id.name} does not have an email.")
 
+            # Now update the loan lines related to this employee and pay them
+            employee = payslip.employee_id
+            date_to = payslip.date_to
+
+            # Find active loans for this employee
+            loans = self.env['hr.employee.loan'].search([
+                ('employee_id', '=', employee.id),
+                ('state', '=', 'released')
+            ])
+
+            for loan in loans:
+                # Check loan lines not yet paid and with due dates before or on the payslip date
+                unpaid_lines = loan.loan_line_ids.filtered(
+                    lambda line: not line.paid and line.date <= date_to
+                )
+
+                for line in unpaid_lines:
+                    line.paid = True  # Mark as paid
+
         return True
 
     # ends here
