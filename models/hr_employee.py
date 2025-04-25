@@ -18,9 +18,6 @@ class HrEmployee(models.Model):
     hdmf = fields.Char(string="HDMF Number")
     philhealth = fields.Char(string="PhilHealth Number")
 
-    # Bank Info
-    bank_name = fields.Char(string="Bank Name")
-
     def _compute_payslip_count(self):
         for employee in self:
             employee.payslip_count = len(employee.slip_ids)
