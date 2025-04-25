@@ -5,10 +5,7 @@
         <field name="inherit_id" ref="hr.view_employee_form"/>
         <field name="arch" type="xml">
             <xpath expr="//page[@name='personal_information']//group[.//field[@name='country_id']]" position="inside">
-                <group string="Government &amp; Bank Info">
-                    
-                
-                            <field name="bank_name"/>
+                <group string="Government Informations">
                             <field name="tin"/>
                             <field name="hdmf"/>
                             <field name="philhealth"/>
