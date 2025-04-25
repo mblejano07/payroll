@@ -48,6 +48,10 @@ COPY public.hr_structure_salary_rule_rel (struct_id, rule_id) FROM stdin;
 6	6
 6	26
 6	39
+6	41
+6	42
+6	43
+6	44
 \.
 
 --

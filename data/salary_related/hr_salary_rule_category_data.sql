@@ -40,6 +40,7 @@ COPY public.hr_salary_rule_category (id, parent_id, company_id, create_uid, writ
 22	\N	1	2	2	NP	{"en_US": "Nightly Premium"}	\N	2025-03-28 04:20:23.928973	2025-03-28 04:20:29.54004
 4	\N	1	1	2	DED	{"en_US": "Deduction"}	\N	2025-03-24 03:03:09.755724	2025-03-28 06:41:25.138222
 23	\N	1	2	2	\N	{"en_US": "Bonus"}	\N	2025-03-28 06:44:07.769091	2025-03-28 06:44:07.769091
+25	\N	1	2	2	LOAN	{"en_US": "Loan"}	\N	2025-04-25 07:43:58.168439	2025-04-25 07:51:30.258501
 \.
 
 --
