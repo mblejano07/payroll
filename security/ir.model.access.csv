@@ -17,4 +17,5 @@ access_hr_payslip_change_state,access_hr_payslip_change_state,model_hr_payslip_c
 access_sss_contribution_user,sss.contribution.user,model_sss_contribution,base.group_user,1,1,1,1
 access_pagibig_contribution_user,pagibig.contribution.user,model_pagibig_contribution,base.group_user,1,1,1,1
 access_philhealth_contribution_user,philhealth.contribution.user,model_philhealth_contribution,base.group_user,1,1,1,1
+employee_record_rule_self_only,Employee: Access own details only,model_hr_employee,base.group_user,1,0,0,0
 
