@@ -49,7 +49,6 @@
     </record>
 
     <!-- Menu Items for Pag-IBIG Contribution -->
-    <menuitem id="menu_hr_root" name="Human Resources"/>
     <menuitem id="menu_pagibig_contribution" name="Pag-IBIG Contribution" parent="menu_hr_root"/>
     <menuitem id="menu_pagibig_contribution_entries" name="Contribution Table" parent="menu_pagibig_contribution" action="action_pagibig_contribution"/>
 </odoo>

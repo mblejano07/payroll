@@ -52,7 +52,7 @@
         <field name="view_mode">list,form</field>
     </record>
 
-    <menuitem id="menu_hr_root" name="Human Resources"/>
+    <menuitem id="menu_hr_root" name="Human Resources - Contributions"/>
     <menuitem id="menu_sss_contribution" name="SSS Contribution" parent="menu_hr_root"/>
     <menuitem id="menu_sss_contribution_entries" name="Contribution Table" parent="menu_sss_contribution" action="action_sss_contribution"/>
 </odoo>
