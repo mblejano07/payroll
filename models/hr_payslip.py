@@ -327,6 +327,7 @@ class HrPayslip(models.Model):
             ('loan_id.state', '=', 'released'),
             ('date', '>=', self.date_from),
             ('date', '<=', self.date_to),
+            ('paid', '=', False),
         ])
         return loan_lines
 
@@ -371,9 +372,6 @@ class HrPayslip(models.Model):
             self.env['hr.payslip.input'].create(loan_deductions)
 
 
-
-
-
     def compute_sheet(self):
         for payslip in self:
             # Step 1: Delete old payslip lines
@@ -402,54 +400,7 @@ class HrPayslip(models.Model):
                     "compute_date": fields.Date.today(),
                 }
             )
-
-    # def compute_sheet(self):
-    #     for payslip in self:
-    #         # delete old payslip lines
-    #         payslip.line_ids.unlink()
-    #         # write payslip lines
-    #         number = payslip.number or self.env["ir.sequence"].next_by_code(
-    #             "salary.slip"
-    #         )
-    #         lines = [(0, 0, line) for line in list(payslip.get_lines_dict().values())]
-    #         payslip.write(
-    #             {
-    #                 "line_ids": lines,
-    #                 "number": number,
-    #                 "state": "verify",
-    #                 "compute_date": fields.Date.today(),
-    #             }
-    #         )
-    #     return True
-    # edited by mblejano
-
-    # def compute_sheet(self):
-    #     for payslip in self:
-    #         # delete old payslip lines
-    #         payslip.line_ids.unlink()
-
-    #         # write payslip lines (default salary lines, etc.)
-    #         number = payslip.number or self.env["ir.sequence"].next_by_code("salary.slip")
-    #         lines = [(0, 0, line) for line in list(payslip.get_lines_dict().values())]
-
-    #         # Add loan deductions to payslip lines
-    #         loan_deduction_lines = payslip.get_loan_deduction_lines()  # Fetch loan deductions
-
-    #         # Add loan deduction lines to the existing lines
-    #         lines.extend(loan_deduction_lines)
-
-    #         # Write the payslip with the new lines (including loan deductions)
-    #         payslip.write(
-    #             {
-    #                 "line_ids": lines,
-    #                 "number": number,
-    #                 "state": "verify",
-    #                 "compute_date": fields.Date.today(),
-    #             }
-    #         )
-
-    #     return True
-
+    #mblejano
     # starts here
 
     @api.model

@@ -67,7 +67,22 @@
                                         </tr>
                                     </tbody>
                                 </table>
-                                
+                                <h3 style="text-align: left; font-weight: bold; margin: 5px 0;">Other Deductions (Loans)</h3>
+                                <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px; border-top: 4px solid #87CEEB;">
+                                    <thead>
+                                        <tr style="background: #f2f2f2; border-bottom: 2px solid #87CEEB;">
+                                            <th style="padding: 5px; text-align: left;">Loan Name</th>
+                                            <th style="padding: 5px; text-align: right;">Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr t-foreach="o.line_ids.filtered(lambda line: line.category_id.code == 'LOAN')" t-as="line">
+                                            <td style="padding: 5px; text-align: left;"> <span t-field="line.name"/></td>
+                                            <td style="padding: 5px; text-align: right;"> <span t-esc="line.total" t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
                                 <h3 style="text-align: left; font-weight: bold; margin: 5px 0;">Other Earnings</h3>
                                 <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px; border-top: 4px solid #87CEEB;">
                                     <thead>
