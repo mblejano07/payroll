@@ -125,8 +125,12 @@
                 </t>
                 <tr>
                     <td><strong>Total <t t-esc="section_title"/></strong></td>
-                    <td colspan="2" style="text-align:right;"><strong>
+                    <td style="text-align:right;"><strong>
                         <span t-esc="section_total" t-options="{'widget': 'monetary', 'display_currency': company.currency_id}"/>
+                    </strong></td>
+                    <td style="text-align:right;"><strong>
+                        <span t-esc="sum([slip.get_year_to_date_total(slip, line.code) for line in lines])"
+                              t-options="{'widget': 'monetary', 'display_currency': company.currency_id}"/>
                     </strong></td>
                 </tr>
             </tbody>
