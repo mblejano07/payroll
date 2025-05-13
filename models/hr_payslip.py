@@ -162,37 +162,47 @@ class HrPayslip(models.Model):
         # compute="_compute_net_pay",
         store=True
     )
-    leave_balance = fields.Float(string='Leave Balance (Days)', compute='_compute_leave_info', store=True)
-    used_leave_credits = fields.Float(string='Used Leave Credits (Days)', compute='_compute_leave_info', store=True)
+    
+    used_sick_credits = fields.Float(string='Used Sick Leave Credits (Days)', compute='_compute_leave_info', store=True)
+    sick_leave_balance = fields.Float(string='Sick Leave Balance (Days)', compute='_compute_leave_info', store=True)
+    used_vacation_credits = fields.Float(string='Used Vacation Leave Credits (Days)', compute='_compute_leave_info', store=True)
+    vacation_leave_balance = fields.Float(string='Vacation Leave Balance (Days)', compute='_compute_leave_info', store=True)
 
     @api.depends('employee_id')
     def _compute_leave_info(self):
-        leave_type = self.env.ref('hr_holidays.holiday_status_cl', raise_if_not_found=False)
+        sick_type = self.env.ref('hr_holidays.holiday_status_sl', raise_if_not_found=False)  # Replace with actual XML ID
+        vacation_type = self.env.ref('hr_holidays.holiday_status_vl', raise_if_not_found=False)  # Replace with actual XML ID
+
         for payslip in self:
-            if not payslip.employee_id or not leave_type:
-                payslip.leave_balance = 0.0
-                payslip.used_leave_credits = 0.0
+            employee = payslip.employee_id
+            # Initialize all values
+            payslip.used_sick_credits = payslip.sick_leave_balance = 0.0
+            payslip.used_vacation_credits = payslip.vacation_leave_balance = 0.0
+
+            if not employee:
                 continue
 
-            # Get all validated allocations for the employee
-            allocations = self.env['hr.leave.allocation'].search([
-                ('employee_id', '=', payslip.employee_id.id),
-                ('state', '=', 'validate'),
-                ('holiday_status_id', '=', leave_type.id)
-            ])
-            total_allocated = sum(alloc.number_of_days for alloc in allocations)
+            def compute_leave(type_obj):
+                if not type_obj:
+                    return 0.0, 0.0
+                allocations = self.env['hr.leave.allocation'].search([
+                    ('employee_id', '=', employee.id),
+                    ('state', '=', 'validate'),
+                    ('holiday_status_id', '=', type_obj.id)
+                ])
+                total_allocated = sum(alloc.number_of_days for alloc in allocations)
 
-            # Get all validated leaves (used leave)
-            used_leaves = self.env['hr.leave'].search([
-                ('employee_id', '=', payslip.employee_id.id),
-                ('state', '=', 'validate'),
-                ('holiday_status_id', '=', leave_type.id)
-            ])
-            total_used = sum(leave.number_of_days for leave in used_leaves)
+                used_leaves = self.env['hr.leave'].search([
+                    ('employee_id', '=', employee.id),
+                    ('state', '=', 'validate'),
+                    ('holiday_status_id', '=', type_obj.id)
+                ])
+                total_used = sum(leave.number_of_days for leave in used_leaves)
 
-            # Set the computed values
-            payslip.used_leave_credits = total_used
-            payslip.leave_balance = total_allocated - total_used
+                return total_allocated - total_used, total_used
+
+            payslip.sick_leave_balance, payslip.used_sick_credits = compute_leave(sick_type)
+            payslip.vacation_leave_balance, payslip.used_vacation_credits = compute_leave(vacation_type)
    
     # def _compute_net_pay(self):
     #     for payslip in self:
