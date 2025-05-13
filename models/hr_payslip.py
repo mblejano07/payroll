@@ -162,6 +162,37 @@ class HrPayslip(models.Model):
         # compute="_compute_net_pay",
         store=True
     )
+    leave_balance = fields.Float(string='Leave Balance (Days)', compute='_compute_leave_info', store=True)
+    used_leave_credits = fields.Float(string='Used Leave Credits (Days)', compute='_compute_leave_info', store=True)
+
+    @api.depends('employee_id')
+    def _compute_leave_info(self):
+        leave_type = self.env.ref('hr_holidays.holiday_status_cl', raise_if_not_found=False)
+        for payslip in self:
+            if not payslip.employee_id or not leave_type:
+                payslip.leave_balance = 0.0
+                payslip.used_leave_credits = 0.0
+                continue
+
+            # Get all validated allocations for the employee
+            allocations = self.env['hr.leave.allocation'].search([
+                ('employee_id', '=', payslip.employee_id.id),
+                ('state', '=', 'validate'),
+                ('holiday_status_id', '=', leave_type.id)
+            ])
+            total_allocated = sum(alloc.number_of_days for alloc in allocations)
+
+            # Get all validated leaves (used leave)
+            used_leaves = self.env['hr.leave'].search([
+                ('employee_id', '=', payslip.employee_id.id),
+                ('state', '=', 'validate'),
+                ('holiday_status_id', '=', leave_type.id)
+            ])
+            total_used = sum(leave.number_of_days for leave in used_leaves)
+
+            # Set the computed values
+            payslip.used_leave_credits = total_used
+            payslip.leave_balance = total_allocated - total_used
    
     # def _compute_net_pay(self):
     #     for payslip in self:

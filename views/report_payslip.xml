@@ -35,7 +35,35 @@
                                         <td style="padding: 5px;"> <span t-field="o.date_to"/></td>
                                     </tr>
                                 </table>
-                                
+                               <!-- Leave Credits -->
+                                <h3 style="text-align: left; font-weight: bold; margin: 5px 0;">Leave Credit Summary</h3>
+                                <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px; border: 2px solid #87CEEB; border-top: 4px solid #87CEEB;">
+                                    <tr>
+                                        <td style="font-weight: bold; padding: 5px; text-align: left;">Leave Type</td>
+                                        <td style="font-weight: bold; padding: 5px; text-align: right;">Used (Days)</td>
+                                        <td style="font-weight: bold; padding: 5px; text-align: right;">Remaining Balance (Days)</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 5px;">Vacation Leave</td>
+                                        <td style="padding: 5px; text-align: right;">
+                                            <span t-field="o.used_leave_credits" t-options="{'precision': 2}"/>
+                                        </td>
+                                        <td style="padding: 5px; text-align: right;">
+                                            <span t-field="o.leave_balance" t-options="{'precision': 2}"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 5px;">Sick Leave</td>
+                                        <td style="padding: 5px; text-align: right;">
+                                            <span t-field="o.used_sick_credits" t-options="{'precision': 2}"/>
+                                        </td>
+                                        <td style="padding: 5px; text-align: right;">
+                                            <span t-field="o.sick_leave_balance" t-options="{'precision': 2}"/>
+                                        </td>
+                                    </tr>
+                                </table>
+
+
                                 <h3 style="text-align: left; font-weight: bold; margin: 5px 0;">Earnings</h3>
                                 <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px; border-top: 4px solid #87CEEB;">
                                     <thead>
