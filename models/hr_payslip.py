@@ -162,6 +162,85 @@ class HrPayslip(models.Model):
         # compute="_compute_net_pay",
         store=True
     )
+    
+    used_sick_credits = fields.Float(string='Used Sick Leave Credits (Days)', compute='_compute_leave_info', store=True)
+    sick_leave_balance = fields.Float(string='Sick Leave Balance (Days)', compute='_compute_leave_info', store=True)
+    used_vacation_credits = fields.Float(string='Used Vacation Leave Credits (Days)', compute='_compute_leave_info', store=True)
+    vacation_leave_balance = fields.Float(string='Vacation Leave Balance (Days)', compute='_compute_leave_info', store=True)
+
+
+    def get_year_to_date_total(self, slip, code):
+        year_start = fields.Date.to_date(f'{slip.date_from.year}-01-01')
+        current_slips = self.env['hr.payslip'].search([
+            ('employee_id', '=', slip.employee_id.id),
+            ('date_from', '>=', year_start),
+            ('date_to', '<=', slip.date_to),
+            ('state', '=', 'done')
+        ])
+
+        total = 0.0
+        for ps in current_slips:
+            for line in ps.line_ids:
+                if line.code == code:
+                    total += line.total
+        return total
+    
+    def get_cumulative_amounts(self):
+        """
+        Return a dictionary like:
+        {
+            'Basic Salary': total,
+            'SSS Premium': total,
+            ...
+        }
+
+        This includes all payslips before the current payslip (based on date_to).
+        """
+        result = {}
+        previous_slips = self.env['hr.payslip'].search([
+            ('employee_id', '=', self.employee_id.id),
+            ('date_to', '<', self.date_to),
+            ('state', '=', 'done')
+        ])
+        for slip in previous_slips:
+            for line in slip.line_ids:
+                result[line.name] = result.get(line.name, 0.0) + line.total
+        return result
+    @api.depends('employee_id')
+    def _compute_leave_info(self):
+        sick_type = self.env.ref('hr_holidays.holiday_status_sl', raise_if_not_found=False)  # Replace with actual XML ID
+        vacation_type = self.env.ref('hr_holidays.holiday_status_vl', raise_if_not_found=False)  # Replace with actual XML ID
+
+        for payslip in self:
+            employee = payslip.employee_id
+            # Initialize all values
+            payslip.used_sick_credits = payslip.sick_leave_balance = 0.0
+            payslip.used_vacation_credits = payslip.vacation_leave_balance = 0.0
+
+            if not employee:
+                continue
+
+            def compute_leave(type_obj):
+                if not type_obj:
+                    return 0.0, 0.0
+                allocations = self.env['hr.leave.allocation'].search([
+                    ('employee_id', '=', employee.id),
+                    ('state', '=', 'validate'),
+                    ('holiday_status_id', '=', type_obj.id)
+                ])
+                total_allocated = sum(alloc.number_of_days for alloc in allocations)
+
+                used_leaves = self.env['hr.leave'].search([
+                    ('employee_id', '=', employee.id),
+                    ('state', '=', 'validate'),
+                    ('holiday_status_id', '=', type_obj.id)
+                ])
+                total_used = sum(leave.number_of_days for leave in used_leaves)
+
+                return total_allocated - total_used, total_used
+
+            payslip.sick_leave_balance, payslip.used_sick_credits = compute_leave(sick_type)
+            payslip.vacation_leave_balance, payslip.used_vacation_credits = compute_leave(vacation_type)
    
     # def _compute_net_pay(self):
     #     for payslip in self:

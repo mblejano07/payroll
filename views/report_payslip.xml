@@ -1,115 +1,139 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <template id="report_payslip">
-            <t t-name="payroll.report_payslip">
-                <t t-set="company" t-value="env.company"/>
-                <t t-call="web.html_container">
-                    <t t-foreach="docs" t-as="o">
-                        <t t-call="web.external_layout">
-                            <div class="page" style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 5px; box-sizing: border-box;">
-                                <t t-if="o.employee_id.company_id.logo">
-                                    <table style="width: 100%; text-align: center; margin: 0;">
-                                        <tr>
-                                            <td style="padding: 5px 0;">
-                                                <img t-att-src="image_data_uri(o.employee_id.company_id.logo)" style="max-height: 50pt; max-width: 100%; padding: 5px;" alt="Company Logo"/>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </t>
+        <t t-name="payroll.report_payslip">
+            <t t-set="company" t-value="env.company"/>
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="web.external_layout">
+                        <div class="page" style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 10px; box-sizing: border-box;">
 
-                                <h2 style="text-align: center; font-weight: bold; text-transform: uppercase; margin: 5px 0;">Salary Statement</h2>
-                                <p style="text-align: center; font-weight: bold; color: #87CEEB; margin: 5px 0;">PRIVATE AND CONFIDENTIAL</p>
-                                
-                                <h3 style="text-align: left; font-weight: bold; margin: 5px 0;">Personal Details</h3>
-                                <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px; border: 2px solid #87CEEB; border-top: 4px solid #87CEEB;">
+                            <t t-if="o.employee_id.company_id.logo">
+                                <table style="width: 100%; text-align: center; margin-bottom: 10px;">
                                     <tr>
-                                        <td style="font-weight: bold; padding: 5px; text-align: left;">Name</td>
-                                        <td style="padding: 5px;"> <span t-field="o.employee_id"/></td>
-                                        <td style="font-weight: bold; padding: 5px;">Designation</td>
-                                        <td style="padding: 5px;"> <span t-field="o.employee_id.job_id"/></td>
-                                    </tr>
-                                    <tr>
-                                        <td style="font-weight: bold; padding: 5px;">Date From</td>
-                                        <td style="padding: 5px;"> <span t-field="o.date_from"/></td>
-                                        <td style="font-weight: bold; padding: 5px;">Date To</td>
-                                        <td style="padding: 5px;"> <span t-field="o.date_to"/></td>
+                                        <td><img t-att-src="image_data_uri(o.employee_id.company_id.logo)" style="max-height: 50pt;" /></td>
                                     </tr>
                                 </table>
-                                
-                                <h3 style="text-align: left; font-weight: bold; margin: 5px 0;">Earnings</h3>
-                                <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px; border-top: 4px solid #87CEEB;">
-                                    <thead>
-                                        <tr style="background: #f2f2f2; border-bottom: 2px solid #87CEEB;">
-                                            <th style="padding: 5px; text-align: left;">Name</th>
-                                            <th style="padding: 5px; text-align: right;">Amount</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr t-foreach="o.line_ids.filtered(lambda line: line.code and line.category_id.code in ('OT', 'BASIC', 'NP'))" t-as="line">
-                                            <td style="padding: 5px; text-align: left;"> <span t-field="line.name"/></td>
-                                            <td style="padding: 5px; text-align: right;"> <span t-esc="line.total" t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                
-                                <h3 style="text-align: left; font-weight: bold; margin: 5px 0;">Deductions</h3>
-                                <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px; border-top: 4px solid #87CEEB;">
-                                    <thead>
-                                        <tr style="background: #f2f2f2; border-bottom: 2px solid #87CEEB;">
-                                            <th style="padding: 5px; text-align: left;">Name</th>
-                                            <th style="padding: 5px; text-align: right;">Amount</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr t-foreach="o.line_ids.filtered(lambda line: line.code and line.category_id.code in ('DED', 'TAX'))" t-as="line">
-                                            <td style="padding: 5px; text-align: left;"> <span t-field="line.name"/></td>
-                                            <td style="padding: 5px; text-align: right;"> <span t-esc="line.total" t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <h3 style="text-align: left; font-weight: bold; margin: 5px 0;">Other Deductions (Loans)</h3>
-                                <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px; border-top: 4px solid #87CEEB;">
-                                    <thead>
-                                        <tr style="background: #f2f2f2; border-bottom: 2px solid #87CEEB;">
-                                            <th style="padding: 5px; text-align: left;">Loan Name</th>
-                                            <th style="padding: 5px; text-align: right;">Amount</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr t-foreach="o.line_ids.filtered(lambda line: line.category_id.code == 'LOAN')" t-as="line">
-                                            <td style="padding: 5px; text-align: left;"> <span t-field="line.name"/></td>
-                                            <td style="padding: 5px; text-align: right;"> <span t-esc="line.total" t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                            </t>
 
-                                <h3 style="text-align: left; font-weight: bold; margin: 5px 0;">Other Earnings</h3>
-                                <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px; border-top: 4px solid #87CEEB;">
-                                    <thead>
-                                        <tr style="background: #f2f2f2; border-bottom: 2px solid #87CEEB;">
-                                            <th style="padding: 5px; text-align: left;">Name</th>
-                                            <th style="padding: 5px; text-align: right;">Amount</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr t-foreach="o.line_ids.filtered(lambda line: line.code and line.category_id.code in ('NTAX','BONUS'))" t-as="line">
-                                            <td style="padding: 5px; text-align: left;"> <span t-field="line.name"/></td>
-                                            <td style="padding: 5px; text-align: right;"> <span t-esc="line.total" t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                
-                                <h3 style="text-align: right; font-weight: bold;">Net Salary: 
-                                    <span t-esc="o.net_pay" t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/>
-                                </h3>
-                                
-                                <p style="text-align: right; font-weight: bold;">Authorized Signature</p>
-                                <p style="text-align: center; font-size: 10px; font-style: italic; margin-top: 20px;">This salary statement is confidential and intended solely for the recipient. Unauthorized disclosure or distribution is strictly prohibited.</p>
-                            </div>
-                        </t>
+                            <h2 style="text-align: center; font-weight: bold;">Salary Statement</h2>
+                            <p style="text-align: center; font-weight: bold; color: #87CEEB;">PRIVATE AND CONFIDENTIAL</p>
+
+                            <!-- Personal Details -->
+                            <h3>Personal Details</h3>
+                            <table style="width: 100%; border: 2px solid #87CEEB; border-collapse: collapse; margin-bottom: 15px;">
+                                <tr>
+                                    <td><strong>Name</strong></td>
+                                    <td><span t-field="o.employee_id"/></td>
+                                    <td><strong>Designation</strong></td>
+                                    <td><span t-field="o.employee_id.job_id"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Date From</strong></td>
+                                    <td><span t-field="o.date_from"/></td>
+                                    <td><strong>Date To</strong></td>
+                                    <td><span t-field="o.date_to"/></td>
+                                </tr>
+                            </table>
+
+                            <!-- Leave Credit Summary -->
+                            <h3>Leave Credit Summary</h3>
+                            <table style="width: 100%; border: 2px solid #87CEEB; border-collapse: collapse; margin-bottom: 15px;">
+                                <tr>
+                                    <th>Leave Type</th>
+                                    <th style="text-align: right;">Used (Days)</th>
+                                    <th style="text-align: right;">Remaining (Days)</th>
+                                </tr>
+                                <tr>
+                                    <td>Vacation Leave</td>
+                                    <td style="text-align: right;"><span t-field="o.used_vacation_credits" t-options="{'precision': 2}"/></td>
+                                    <td style="text-align: right;"><span t-field="o.vacation_leave_balance" t-options="{'precision': 2}"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Sick Leave</td>
+                                    <td style="text-align: right;"><span t-field="o.used_sick_credits" t-options="{'precision': 2}"/></td>
+                                    <td style="text-align: right;"><span t-field="o.sick_leave_balance" t-options="{'precision': 2}"/></td>
+                                </tr>
+                            </table>
+
+                            <!-- Earnings Section -->
+                            <t t-call="payroll.report_section_table">
+                                <t t-set="section_title" t-value="'Earnings'"/>
+                                <t t-set="code_filter" t-value="['OT', 'BASIC', 'NP']"/>
+                                <t t-set="lines" t-value="o.line_ids.filtered(lambda l: l.code and l.category_id.code in code_filter)"/>
+                                <t t-set="slip" t-value="o"/>
+                            </t>
+
+                            <!-- Deductions Section -->
+                            <t t-call="payroll.report_section_table">
+                                <t t-set="section_title" t-value="'Deductions'"/>
+                                <t t-set="code_filter" t-value="['DED', 'TAX']"/>
+                                <t t-set="lines" t-value="o.line_ids.filtered(lambda l: l.code and l.category_id.code in code_filter)"/>
+                                <t t-set="slip" t-value="o"/>
+                            </t>
+
+                            <!-- Loan Deductions Section -->
+                            <t t-call="payroll.report_section_table">
+                                <t t-set="section_title" t-value="'Loan Deductions'"/>
+                                <t t-set="lines" t-value="o.line_ids.filtered(lambda l: l.category_id.code == 'LOAN')"/>
+                                <t t-set="slip" t-value="o"/>
+                            </t>
+
+                            <!-- Bonuses and Non-Taxable -->
+                            <t t-call="payroll.report_section_table">
+                                <t t-set="section_title" t-value="'Bonuses and Non-Taxable Earnings'"/>
+                                <t t-set="code_filter" t-value="['BONUS', 'NTAX']"/>
+                                <t t-set="lines" t-value="o.line_ids.filtered(lambda l: l.code and l.category_id.code in code_filter)"/>
+                                <t t-set="slip" t-value="o"/>
+                            </t>
+
+                            <!-- Net Pay -->
+                            <h2 style="text-align: right; margin-top: 25px; color: #004085;">
+                                Net Pay:
+                                <span t-esc="o.net_pay" t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}" />
+                            </h2>
+                        </div>
                     </t>
                 </t>
             </t>
+        </t>
+    </template>
 
+    <template id="report_section_table">
+        <h3><t t-esc="section_title"/></h3>
+        <table style="width: 100%; border: 2px solid #87CEEB; border-collapse: collapse; margin-bottom: 15px;">
+            <thead>
+                <tr style="background: #f2f2f2;">
+                    <th>Name</th>
+                    <th style="text-align:right;">Amount</th>
+                    <th style="text-align:right;">Cumulative</th>
+                </tr>
+            </thead>
+            <tbody>
+                <t t-set="section_total" t-value="0.0"/>
+                <t t-foreach="lines" t-as="line">
+                    <t t-set="section_total" t-value="section_total + line.total"/>
+                    <tr>
+                        <td><span t-field="line.name"/></td>
+                        <td style="text-align:right;">
+                            <span t-esc="line.total" t-options="{'widget': 'monetary', 'display_currency': line.company_id.currency_id}"/>
+                        </td>
+                        <td style="text-align:right;">
+                            <span t-esc="slip.get_year_to_date_total(slip, line.code)" t-options="{'widget': 'monetary', 'display_currency': line.company_id.currency_id}"/>
+                        </td>
+                    </tr>
+                </t>
+                <tr>
+                    <td><strong>Total <t t-esc="section_title"/></strong></td>
+                    <td style="text-align:right;"><strong>
+                        <span t-esc="section_total" t-options="{'widget': 'monetary', 'display_currency': company.currency_id}"/>
+                    </strong></td>
+                    <td style="text-align:right;"><strong>
+                        <span t-esc="sum([slip.get_year_to_date_total(slip, line.code) for line in lines])"
+                              t-options="{'widget': 'monetary', 'display_currency': company.currency_id}"/>
+                    </strong></td>
+                </tr>
+            </tbody>
+        </table>
     </template>
 </odoo>
