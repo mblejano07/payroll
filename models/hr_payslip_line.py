@@ -43,13 +43,45 @@ class HrPayslipLine(models.Model):
         "Allow editing", compute="_compute_allow_edit_payslip_lines"
     )
 
+
+    # cumulative_total = fields.Float(
+    #     string='Cumulative (Year)',
+    #     compute='_compute_cumulative_total',
+    #     store=False,
+    #     help='Cumulative total of this payslip line code from January 1 to this payslip end date'
+    # )
+
+    # @api.depends('slip_id.date_from', 'slip_id.date_to', 'slip_id.employee_id', 'code')
+    # def _compute_cumulative_total(self):
+    #     for line in self:
+    #         slip = line.slip_id
+    #         if not (slip.date_from and slip.date_to and slip.employee_id and line.code):
+    #             line.cumulative_total = 0.0
+    #             continue
+
+    #         year_start = slip.date_from.replace(month=1, day=1)
+
+    #         payslips = self.env['hr.payslip'].search([
+    #             ('employee_id', '=', slip.employee_id.id),
+    #             ('date_from', '>=', year_start),
+    #             ('date_to', '<=', slip.date_to),
+    #             ('state', '=', 'done'),
+    #         ])
+
+    #         matching_lines = self.env['hr.payslip.line'].search([
+    #             ('slip_id', 'in', payslips.ids),
+    #             ('code', '=', line.code),
+    #         ])
+
+    #         line.cumulative_total = sum(matching_lines.mapped('total'))
+            
     def _compute_allow_edit_payslip_lines(self):
         self.allow_edit_payslip_lines = (
             self.env["ir.config_parameter"]
             .sudo()
             .get_param("payroll.allow_edit_payslip_lines")
         )
-
+   
     @api.depends("parent_rule_id", "contract_id", "slip_id")
     def _compute_parent_line_id(self):
         for line in self:
