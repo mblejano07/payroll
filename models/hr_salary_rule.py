@@ -160,6 +160,8 @@ class HrSalaryRule(models.Model):
         compute="_compute_require_code_and_category",
         default=lambda self: self._compute_require_code_and_category(),
     )
+    account_debit = fields.Many2one('account.account', string='Debit Account')
+    account_credit = fields.Many2one('account.account', string='Credit Account')
 
     @api.constrains("parent_rule_id")
     def _check_parent_rule_id(self):

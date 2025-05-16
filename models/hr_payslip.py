@@ -168,7 +168,60 @@ class HrPayslip(models.Model):
     used_vacation_credits = fields.Float(string='Used Vacation Leave Credits (Days)', compute='_compute_leave_info', store=True)
     vacation_leave_balance = fields.Float(string='Vacation Leave Balance (Days)', compute='_compute_leave_info', store=True)
 
+    journal_id = fields.Many2one(
+    'account.journal',
+    string='Accounting Journal',
+    domain=[('type', 'in', ['general', 'cash'])],
+    help="Journal used to post accounting entries for this payslip."
+)
 
+    move_id = fields.Many2one(
+        'account.move',
+        string='Journal Entry',
+        readonly=True,
+        copy=False,
+        help="Accounting entry for this payslip."
+    )
+
+    def _prepare_account_move(self):
+        self.ensure_one()
+
+        move_lines = []
+        for line in self.line_ids:
+            rule = line.salary_rule_id
+            if not rule.account_debit or not rule.account_credit:
+                continue
+
+            amount = line.total
+
+            # Debit line
+            move_lines.append((0, 0, {
+                'name': line.name,
+                'account_id': rule.account_debit.id,
+                'debit': amount if amount > 0 else 0.0,
+                'credit': -amount if amount < 0 else 0.0
+
+            }))
+
+            # Credit line
+            move_lines.append((0, 0, {
+                'name': line.name,
+                'account_id': rule.account_credit.id,
+                'debit': -amount if amount < 0 else 0.0,
+                'credit': amount if amount > 0 else 0.0
+
+            }))
+
+        move_vals = {
+            'ref': self.number or '/',
+            'date': self.date_to,
+            'journal_id': self.journal_id.id,
+            'line_ids': move_lines,
+        }
+
+        return move_vals
+
+    
     def get_year_to_date_total(self, slip, code):
         year_start = fields.Date.to_date(f'{slip.date_from.year}-01-01')
         current_slips = self.env['hr.payslip'].search([
@@ -314,6 +367,14 @@ class HrPayslip(models.Model):
         self.write({"state": "done"})
         # _logger.info("✅ Payslip status set to 'Done'.")
 
+        for payslip in self:
+            if not payslip.move_id and payslip.journal_id:
+                move_vals = payslip._prepare_account_move()
+                move = self.env['account.move'].create(move_vals)
+                move.action_post()
+                payslip.move_id = move.id
+
+
         # Send email notification
         template = self.env.ref('payroll.mail_template_hr_payslip', raise_if_not_found=False)
 
@@ -397,24 +458,20 @@ class HrPayslip(models.Model):
         return super().unlink()
     
     # mblejano
-    def _get_employee_loan_lines(self):
+   
+    def _get_employee_loan_lines(self, payslip):
         """
-        Fetch the loan lines for the employee that are active within the payslip period.
+        Fetch the loan lines for the employee of a given payslip.
         """
-        loan_lines = self.env['hr.employee.loan.line'].search([
-            ('loan_id.employee_id', '=', self.employee_id.id),
+        return self.env['hr.employee.loan.line'].search([
+            ('loan_id.employee_id', '=', payslip.employee_id.id),
             ('loan_id.state', '=', 'released'),
-            ('date', '>=', self.date_from),
-            ('date', '<=', self.date_to),
+            ('date', '>=', payslip.date_from),
+            ('date', '<=', payslip.date_to),
             ('paid', '=', False),
         ])
-        return loan_lines
 
     def _create_loan_deductions(self):
-        loan_lines = self._get_employee_loan_lines()
-        loan_deductions = []
-
-        # Institution ID to code mapping
         institution_code_map = {
             1: 'LOAN_PAGIBIG',
             2: 'LOAN_PHILHEALTH',
@@ -422,34 +479,33 @@ class HrPayslip(models.Model):
             4: 'LOAN_SALARY',
         }
 
-        for loan_line in loan_lines:
-            institution_id = loan_line.loan_id.institution_id.id
-            input_code = institution_code_map.get(institution_id, 'LOAN')  # Fallback to 'LOAN' if not mapped
+        for payslip in self:
+            loan_lines = self._get_employee_loan_lines(payslip)
+            loan_deductions = []
 
-            # Check if input already exists to avoid duplicates
-            existing_input = self.env['hr.payslip.input'].search([
-                ('payslip_id', '=', self.id),
-                ('code', '=', input_code)
-            ], limit=1)
+            for loan_line in loan_lines:
+                institution_id = loan_line.loan_id.institution_id.id
+                input_code = institution_code_map.get(institution_id, 'LOAN')
 
-            if not existing_input:
-                loan_deductions.append({
-                    'name': loan_line.loan_id.name,
-                    'payslip_id': self.id,
-                    'sequence': 10,
-                    'code': input_code,
-                    'amount': loan_line.amount,
-                    'contract_id': self.contract_id.id,
-                })
-            else:
-                # Update the amount if it already exists
-                existing_input.write({
-                    'amount': loan_line.amount,
-                })
+                existing_input = self.env['hr.payslip.input'].search([
+                    ('payslip_id', '=', payslip.id),
+                    ('code', '=', input_code)
+                ], limit=1)
 
-        if loan_deductions:
-            self.env['hr.payslip.input'].create(loan_deductions)
+                if not existing_input:
+                    loan_deductions.append({
+                        'name': loan_line.loan_id.name,
+                        'payslip_id': payslip.id,
+                        'sequence': 10,
+                        'code': input_code,
+                        'amount': loan_line.amount,
+                        'contract_id': payslip.contract_id.id,
+                    })
+                else:
+                    existing_input.write({'amount': loan_line.amount})
 
+            if loan_deductions:
+                self.env['hr.payslip.input'].create(loan_deductions)
 
     def compute_sheet(self):
         for payslip in self:
