@@ -316,7 +316,10 @@
                                 </group>
                                 <group name="accounting" string="Accounting">
                                     <field name="paid" readonly="1" />
+                                    <field name="journal_id"/>
+                                    <field name="move_id" readonly="1"/>
                                 </group>
+                                
                             </group>
                             <div colspan="4">
                                 <field
