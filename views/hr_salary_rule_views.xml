@@ -206,6 +206,10 @@
                                         required="amount_select == 'percentage'"
                                     />
                                 </group>
+                                <group string="Accounting" name="accounting">
+                                    <field name="account_debit"/>
+                                    <field name="account_credit"/>
+                                </group>
                             </group>
                         </page>
                         <page name="rules" string="Child Rules">
