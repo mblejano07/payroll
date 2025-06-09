@@ -106,20 +106,22 @@
                 <tr style="background: #f2f2f2;">
                     <th>Name</th>
                     <th style="text-align:right;">Amount</th>
-                    <th style="text-align:right;">Cumulative</th>
+                    <th style="text-align:right;">Year-to-Date</th>
                 </tr>
             </thead>
             <tbody>
                 <t t-set="section_total" t-value="0.0"/>
                 <t t-foreach="lines" t-as="line">
-                    <t t-set="section_total" t-value="section_total + line.total"/>
+                    <t t-set="abs_total" t-value="abs(line.total)"/>
+                    <t t-set="abs_ytd" t-value="abs(slip.get_year_to_date_total(slip, line.code))"/>
+                    <t t-set="section_total" t-value="section_total + abs_total"/>
                     <tr>
                         <td><span t-field="line.name"/></td>
                         <td style="text-align:right;">
-                            <span t-esc="line.total" t-options="{'widget': 'monetary', 'display_currency': line.company_id.currency_id}"/>
+                            <span t-esc="abs_total" t-options="{'widget': 'monetary', 'display_currency': line.company_id.currency_id}"/>
                         </td>
                         <td style="text-align:right;">
-                            <span t-esc="slip.get_year_to_date_total(slip, line.code)" t-options="{'widget': 'monetary', 'display_currency': line.company_id.currency_id}"/>
+                            <span t-esc="abs_ytd" t-options="{'widget': 'monetary', 'display_currency': line.company_id.currency_id}"/>
                         </td>
                     </tr>
                 </t>
@@ -129,7 +131,7 @@
                         <span t-esc="section_total" t-options="{'widget': 'monetary', 'display_currency': company.currency_id}"/>
                     </strong></td>
                     <td style="text-align:right;"><strong>
-                        <span t-esc="sum([slip.get_year_to_date_total(slip, line.code) for line in lines])"
+                        <span t-esc="sum([abs(slip.get_year_to_date_total(slip, line.code)) for line in lines])"
                               t-options="{'widget': 'monetary', 'display_currency': company.currency_id}"/>
                     </strong></td>
                 </tr>
